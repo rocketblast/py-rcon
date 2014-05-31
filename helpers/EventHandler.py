@@ -30,7 +30,7 @@ class LoggHandler():
 
 		#basically for printing out messages to the console it self
 		streamhandler = logging.StreamHandler()
-		straemhandler.setFormatter(formatter)
+		streamhandler.setFormatter(formatter)
 
 		logger.setLevel(level)
 		logger.addHandler(filehandler)

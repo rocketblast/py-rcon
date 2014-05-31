@@ -5,7 +5,7 @@
 
 import ConfigParser
 
-class CfgHandler():
+class ConfigHandler():
 	""" There will be some awesome comments here later on...i hope..."""
 
 	@staticmethod
@@ -18,7 +18,7 @@ class CfgHandler():
 			try:
 				#fetches any section matching given argument
 				dict_sections[option] = Config.get(section, option)
-				if dict_sections[option] == -1:
+				#if dict_sections[option] == -1:
 					# Do some debbuging stuff here later on
 			except Exception as e:
 				print("There's a freakin exception in your confighandler!")
