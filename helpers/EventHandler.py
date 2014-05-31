@@ -6,7 +6,7 @@
 import os, sys
 import logging, logging.handlers
 
-class LoggHandler():
+class LoggHandler(object):
 	""" Maybe there will be something cool here one day.... """
 
 	""" 
@@ -15,12 +15,14 @@ class LoggHandler():
 		log1 = logging.getLogger('log1')
 		log1.info('logger is now working...')
 		log1.critical('all your base belong to us!...')
-
 	"""
+
+	logger = None
 
 	@staticmethod
 	def setup_logger(logger_name, log_file, level=logging.INFO):
-		logger = logging.getLogger(logger_name)
+		#global logger
+		LoggHandler.logger = logging.getLogger(logger_name)
 		formatter = logging.Formatter(fmt='[%(asctime)s] (%(levelname)s) - %(message)s',
                                     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -32,6 +34,8 @@ class LoggHandler():
 		streamhandler = logging.StreamHandler()
 		streamhandler.setFormatter(formatter)
 
-		logger.setLevel(level)
-		logger.addHandler(filehandler)
-		logger.addHandler(streamhandler)
+		LoggHandler.logger.setLevel(level)
+		LoggHandler.logger.addHandler(filehandler)
+		LoggHandler.logger.addHandler(streamhandler)
+
+		return LoggHandler.logger

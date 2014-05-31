@@ -9,11 +9,11 @@ import socket
 import sys
 import threading
 
-import helpers.EventHandler as LoggHandler
+from helpers.EventHandler import LoggHandler
 from battlefield import frostbite
 from plugins import base_bf4plugin	#might need to work on the paths...
 
-runningpath = os.path.dirname(__file__)
+runningpath = os.getcwd()
 
 class BF4Handler(threading.Thread):
 	bf4log = None
@@ -30,8 +30,5 @@ class BF4Handler(threading.Thread):
 		self.socket = None
 
 		self.logName = 'bf4-{}'.format(name)
-		# Logghandler.setup_logger(self.logName, '{}/logs/servers/{}'.format(runningpath, self.logName))
-		# self.bf4log = logging.getLogger()
-		# LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
-		# self.bf4log = logging.getLogger('py-rcon')
-		# self.bf4log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))
+		self.bf4log = LoggHandler.setup_logger(self.logName, '{}/logs/servers/{}.log'.format(runningpath, self.logName))
+		self.bf4log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))

@@ -10,15 +10,14 @@ import logging
 
 from helpers import ConfigHandler
 from helpers.EventHandler import LoggHandler
-
 from battlefield.handlers.bf4handler import BF4Handler
 
 logg = None
 
 def main():
 	runningpath = os.path.dirname(__file__)
-	LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
-	logg = logging.getLogger('py-rcon')
+	logg = LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
+	#logg = logging.getLogger('py-rcon')
 
 	logg.info('py-rcon is starting up!')
 
