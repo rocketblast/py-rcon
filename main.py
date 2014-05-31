@@ -11,6 +11,8 @@ import logging
 from helpers import ConfigHandler
 from helpers.EventHandler import LoggHandler
 
+from battlefield.handlers.bf4handler import BF4Handler
+
 logg = None
 
 def main():
@@ -19,6 +21,8 @@ def main():
 	logg = logging.getLogger('py-rcon')
 
 	logg.info('py-rcon is starting up!')
+
+	t = BF4Handler('testinstance', 'ipaddddreeesssss', 'portnumber', 'rconpass')
 
 if __name__ == '__main__':
 	main()
