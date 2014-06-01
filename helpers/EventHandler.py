@@ -21,7 +21,11 @@ class LoggHandler(object):
 
 	@staticmethod
 	def setup_logger(logger_name, log_file, level=logging.INFO):
-		#global logger
+		#if directory does not exsists, then just create it
+		path = log_file.rsplit('/', 1)[0] #removes filename for log, e.g /example/example.log into /example/
+		if not os.path.exists(path):
+			os.makedirs(path)
+
 		LoggHandler.logger = logging.getLogger(logger_name)
 		formatter = logging.Formatter(fmt='[%(asctime)s] (%(levelname)s) - %(message)s',
                                     datefmt='%Y-%m-%d %H:%M:%S')
