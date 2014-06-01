@@ -21,7 +21,7 @@ def main():
 
     logg.info('py-rcon is starting up!')
 
-    t = BF4Handler('server', '188.126.64.7', 47210, 'password', plugins=[])
+    t = BF4Handler('battlefield', 'server', '188.126.64.7', 47210, 'password', plugins=[])
     t.start()
 if __name__ == '__main__':
     main()
