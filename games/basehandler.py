@@ -51,9 +51,10 @@ class BaseHandler(threading.Thread):
         for plugin in self.serverPlugins:
             try:
                 __import__('plugins.{}.{}'.format(self.serverType, plugin))
+                self.serverLoadedPlugins.append(plugin())   #Keep track on this, might need to change it
             except:
-                self.log.error('Unable to load plugin: {}'.format(plugin))
-        
+                self.log.error('Unable to load plugin: {}'.format(plugin)) 
+        self.log.info('Loaded all plugins for this server')
 
     @property
     def rcon(self):
