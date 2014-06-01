@@ -15,13 +15,13 @@ from games.battlefield.bf4handler import BF4Handler
 logg = None
 
 def main():
-	runningpath = os.path.dirname(__file__)
-	logg = LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
-	#logg = logging.getLogger('py-rcon')
+    runningpath = os.path.dirname(__file__)
+    logg = LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
+    #logg = logging.getLogger('py-rcon')
 
-	logg.info('py-rcon is starting up!')
+    logg.info('py-rcon is starting up!')
 
-	t = BF4Handler('testinstance', 'ipaddddreeesssss', 'portnumber', 'rconpass')
+    t = BF4Handler('testinstance', 'ipaddddreeesssss', 'portnumber', 'rconpass')
 
 if __name__ == '__main__':
-	main()
+    main()
