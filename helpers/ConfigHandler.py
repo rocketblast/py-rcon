@@ -5,7 +5,7 @@
 
 import ConfigParser
 
-class ConfigHandler():
+class ConfigHandler:
     """ There will be some awesome comments here later on...i hope..."""
 
     @staticmethod
