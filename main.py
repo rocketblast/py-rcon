@@ -10,7 +10,7 @@ import logging
 
 from helpers import ConfigHandler
 from helpers.EventHandler import LoggHandler
-from battlefield.handlers.bf4handler import BF4Handler
+from games.battlefield.bf4handler import BF4Handler
 
 logg = None
 
