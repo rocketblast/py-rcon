@@ -10,37 +10,32 @@ import sys
 import threading
 
 from helpers import LoggHandler
-from . import frostbite
+from games import BaseHandler
+from frostbite import Battlefield4
 #from plugins.battlefield.ingame_admin.py import 
 
-runningpath = os.getcwd()
+#runningpath = os.getcwd()
 
-class BF4Handler(threading.Thread):
-    bf4log = None
+class BF4Handler(BaseHandler):
+    def __init__(self, name, ip, port, password, plugins=[], **kwargs):
 
-    def __init__(self, name, ip, port, password, plugins=None):
-        threading.Thread.__init__(self)	#initilize the stuff!
+        self.logName = 'bf4-{}'.format(name.strip())
+        BaseHandler.__init__(self, name, ip, port, password, plugins, Battlefield4, **kwargs)
 
-        self.serverName = name
-        self.serverIp = ip
-        self.serverPort = port
-        self.serverPassword = password
-        self.serverPlugins = plugins
-        self.serverLoadedPlugins = list()
-        self.socket = None
-
-        self.logName = 'bf4-{}'.format(name)
-        self.bf4log = LoggHandler.setup_logger(self.logName, '{}/logs/servers/{}.log'.format(runningpath, self.logName))
-        self.bf4log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))
-
-    @classmethod
     def run(self):
         if self.connect():
-            self.bf4log.info('Connected [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
+            self.log.info('Connected [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
+            print(self.rcon.login(self.serverPassword))
+            print(self.rcon.getEvents(True))
+            while self.connected():
+                data = self.rcon.receive_event()
+                print(data)
+                self.log.debug('Got event: {} with data: {}'.format(data[0], data))
+
 
             #load plugins for this instance
         else:
-            self.bf4log.warn('Unable to establish a connection to [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
+            self.log.error('Unable to establish a connection to [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
 
     def events(self, plugin, event, data):
         evts = {

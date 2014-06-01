@@ -7,8 +7,6 @@ import os, sys
 import logging, logging.handlers
 
 class LoggHandler(object):
-    """ Maybe there will be something cool here one day.... """
-
     """
         Example how you can use this class would be something like this:
         LoggHandler.setup_logger('log1', r'C:\logs\log1.log')
