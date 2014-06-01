@@ -3,8 +3,10 @@
 # File: EventHandler.py
 # Description: This file contains a basic static class for logging events through the application
 
-import os, sys
-import logging, logging.handlers
+import os
+import sys
+import logging
+import logging.handlers
 
 class LoggHandler(object):
     """ Maybe there will be something cool here one day.... """
