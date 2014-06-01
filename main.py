@@ -9,8 +9,8 @@ import sys, os
 import logging
 
 from helpers import ConfigHandler
-from helpers.EventHandler import LoggHandler
-from games.battlefield.bf4handler import BF4Handler
+from helpers import LoggHandler
+from games.battlefield import BF4Handler
 
 logg = None
 

@@ -9,8 +9,8 @@ import socket
 import sys
 import threading
 
-from helpers.EventHandler import LoggHandler
-from games.battlefield import frostbite
+from helpers import LoggHandler
+from . import frostbite
 #from plugins.battlefield.ingame_admin.py import 
 
 runningpath = os.getcwd()

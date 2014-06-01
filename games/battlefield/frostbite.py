@@ -134,7 +134,7 @@ def send_packet(socket, data):
     getRequest = EncodeClientRequest( data )
     socket.send(getRequest)
 
-    [getResponse, receiveBuffer] = receivePacket(socket, receiveBuffer)
+    [getResponse, receiveBuffer] = receive_packet(socket, receiveBuffer)
     [isFromServer, isResponse, sequence, words] = DecodePacket(getResponse)
 
     return words
