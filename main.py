@@ -21,7 +21,18 @@ def main():
 
     logg.info('py-rcon is starting up!')
 
-    t = BF4Handler('battlefield', 'server', '188.126.64.7', 47210, 'password', plugins=[])
-    t.start()
+    threads = []
+    t = BF4Handler('server', '188.126.64.7', 47210, 'password', plugins=[])
+    threads.append(t)
+
+    for t in threads:
+    	t.daemon = True
+    	t.start()
+    
+    try:
+    	while True:
+    		time.sleep(1)
+    except KeyboardInterrupt:
+    	sys.exit('Ctrl^C received - exiting!')
 if __name__ == '__main__':
     main()

@@ -11,22 +11,26 @@ import threading
 
 from helpers import LoggHandler
 from games import BaseHandler
-from frostbite import Battlefield4
-#from plugins.battlefield.ingame_admin.py import 
+from frostbite import Frostbite
+#from frostbite import Battlefield4
 
 #runningpath = os.getcwd()
 
 class BF4Handler(BaseHandler):
-    def __init__(self, name, ip, port, password, plugins=[], **kwargs):
-
+    #def __init__(self, name, ip, port, password, plugins=[], **kwargs):
+    def __init__(self, name, ip, port, password, plugins=[]):
         self.logName = 'bf4-{}'.format(name.strip())
-        BaseHandler.__init__(self, name, ip, port, password, plugins, Battlefield4, **kwargs)
+        #BaseHandler.__init__(self, name, ip, port, password, plugins, Battlefield4, **kwargs)
 
     def run(self):
         if self.connect():
             self.log.info('Connected [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
-            print(self.rcon.login(self.serverPassword))
-            print(self.rcon.getEvents(True))
+
+            if self.serverPlugins:
+                self.load_plugins()
+
+
+
             while self.connected():
                 data = self.rcon.receive_event()
                 print(data)
@@ -62,4 +66,5 @@ class BF4Handler(BaseHandler):
         }
         return evts.get(event, plugin.on_unknown)(data)
 
-    #def load_plugins(self):
+    def rcon_login(self):
+        

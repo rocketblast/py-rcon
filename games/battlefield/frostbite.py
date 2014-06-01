@@ -124,10 +124,10 @@ class Frostbite:
 
     # Wait until the local receive buffer contains a full packet (appending data from the network socket),
     # then split receive buffer into first packet and remaining buffer data
-    def receive_packet(self, receiveBuffer=""):
-
-        while not self.containsCompletePacket(receiveBuffer):
-            receiveBuffer += self.socket.recv(4096)
+    @staticmethod
+    def receive_packet(socket, receiveBuffer=""):
+        while not Frostbite.containsCompletePacket(receiveBuffer):
+            receiveBuffer += socket.recv(4096)
 
         packetSize = Frostbite.DecodeInt32(receiveBuffer[4:8])
 
@@ -142,47 +142,46 @@ class Frostbite:
         [isFromServer, isResponse, sequence, words] = Frostbite.DecodePacket(getResponse)
         return words
     ###################################################################################
-    def send_packet(self, data):
-
+    def send_packet(socket, data):
         receiveBuffer = ""
 
         getRequest = Frostbite.EncodeClientRequest(data)
-        self.socket.send(getRequest)
+        socket.send(getRequest)
 
-        [getResponse, receiveBuffer] = self.receive_packet(receiveBuffer)
+        [getResponse, receiveBuffer] = Frostbite.receive_packet(receiveBuffer)
         [isFromServer, isResponse, sequence, words] = Frostbite.DecodePacket(getResponse)
 
         return words
 
 
-class Battlefield(Frostbite):
+# class Battlefield(Frostbite):
 
-    def __init__(self, _socket, log):
-        self.socket = _socket
-        self.log = log
-        Frostbite.__init__(self)
+#     def __init__(self, _socket, log):
+#         self.socket = _socket
+#         self.log = log
+#         Frostbite.__init__(self)
 
-    def login(self, password):
-        login = self.send_packet(["login.hashed"])
-        passwordhash = self.generatePasswordHash(login[1].decode("hex"), password)
-        passwordhashhexString = passwordhash.encode("hex").upper()
-        response = self.send_packet(["login.hashed", passwordhashhexString])
+#     def login(self, password):
+#         login = self.send_packet(["login.hashed"])
+#         passwordhash = self.generatePasswordHash(login[1].decode("hex"), password)
+#         passwordhashhexString = passwordhash.encode("hex").upper()
+#         response = self.send_packet(["login.hashed", passwordhashhexString])
 
-        if response[0] != "OK":
-            return False
-            pass
-            #logger.error('[{}:{}] Wrong RCON password. Exiting.'.format(self.serverIp, self.serverPort))
-            #sys.exit()
+#         if response[0] != "OK":
+#             return False
+#             pass
+#             #logger.error('[{}:{}] Wrong RCON password. Exiting.'.format(self.serverIp, self.serverPort))
+#             #sys.exit()
 
-        return response
+#         return response
 
-    def getEvents(self, status):
-        return self.send_packet(['admin.eventsEnabled', status])
+#     def getEvents(self, status):
+#         return self.send_packet(['admin.eventsEnabled', status])
 
-class Battlefield4(Battlefield):
+# class Battlefield4(Battlefield):
 
-    def __init__(self, _socket, log):
-        Battlefield.__init__(self, _socket, log)
+#     def __init__(self, _socket, log):
+#         Battlefield.__init__(self, _socket, log)
 
 
 

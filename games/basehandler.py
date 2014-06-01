@@ -1,14 +1,14 @@
-import threading
-from helpers import LoggHandler
 import os
 import socket
+import threading
+
+from helpers import LoggHandler
 
 class BaseHandler(threading.Thread):
 
-    def __init__(self, stype, name, ip, port, password, plugins, communicator, **kwargs):
+    def __init__(self, name, ip, port, password, plugins, communicator, **kwargs):
         threading.Thread.__init__(self, **kwargs)
 
-        self.serverType = stype
         self.serverName = name
         self.serverIp = ip
         self.serverPort = port
@@ -23,16 +23,21 @@ class BaseHandler(threading.Thread):
         self.log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))
 
     def connect(self):
-        self.log.info('[{}:{}] Connecting to server...'.format(self.serverIp, self.serverPort))
+        #logg no longer needed, we want to know when it's connected not when it's trying
+        #self.log.info('[{}:{}] Connecting to server...'.format(self.serverIp, self.serverPort))
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.settimeout(1)
             self.socket.connect((self.serverIp, self.serverPort))
             self.socket.setblocking(1)
+            
+            #Not sure if we wanna tell our log already here that we are connected
+            #self.log.info('Connected to [{}:{}]'.format(self.serverIp, self.serverPort))
+            
             return True
         except socket.error as err:
             self.log.error('[{}:{}] Unable to connect ({})'.format(self.serverIp, self.serverPort, err))
-        return False
+            return False
 
     def connected(self):
         if self.socket.recv(4096):
