@@ -37,6 +37,7 @@ class BF4Handler(BaseHandler):
 
                 for plugin in self.serverLoadedPlugins:
                     try:
+                        print event
                         self.events(plugin, event, data)
                     except Exception as ex:
                         self.log.warn('Unable to handle plugin: {}, with error: {}'.format(plugin, ex))
@@ -53,16 +54,17 @@ class BF4Handler(BaseHandler):
             self.log.error('Unable to establish a connection to [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
 
     def events(self, plugin, event, data):
+        print "Event: {}  data: {}".format(event, data)
         evts = {
             #player events
-            'player.onauthenticated': plugin.on_authenticated,
+            'player.on_authenticated': plugin.on_authenticated,
             'player.onJoin': plugin.on_join,
             'player.onLeave': plugin.on_leave,
             'player.onSpawn': plugin.on_spawn,
             'player.onKill': plugin.on_kill,
             'player.onChat': plugin.on_chat,
             'player.onConnect': plugin.on_connect,
-            'player.onSquadChange': plugin.on_squadchange,
+            'player.onsquadchange': plugin.on_squadchange,
             'player.onTeamChange': plugin.on_teamchange,
 
             #punkbuster events
@@ -75,6 +77,7 @@ class BF4Handler(BaseHandler):
             'server.onRoundOverPlayers': plugin.on_roundoverplayers,
             'server.onRoundOverTeamScores': plugin.on_roundoverscore,
         }
+
         return evts.get(event, plugin.on_unknown)(data)
 
     def receive_packet(self, socket=None, receiveBuffer=""):

@@ -43,10 +43,11 @@ class BaseHandler(threading.Thread):
         for plugin in self.serverPlugins:
             try:
                 #__import__('plugins.{}.{}'.format(str(self.serverType), str(plugin)))
-                print 'plugins.{}.{}'.format(self.serverType, str('plugin'))
-                importlib.import_module('plugins.battlefield.ingame_admin')
                 #importlib.import_module('plugins.{}.{}'.format(self.serverType, plugin))
-                self.serverLoadedPlugins.append(plugin)   #Keep track on this, might need to change it
+                #module = self.load_class('plugins.{}.{}'.format(str(self.serverType), str(plugin)))
+                mod = __import__('plugins.{}.{}'.format(self.serverType, plugin), fromlist=[str(plugin)])
+                nclass = getattr(mod, str(plugin))
+                self.serverLoadedPlugins.append(nclass)   #Keep track on this, might need to change it
             except Exception as ex:
                 self.log.error('Unable to load plugin: {} from path: plugins.{}.{}'.format(plugin, self.serverType, plugin)) 
                 self.log.error(ex)
