@@ -15,6 +15,8 @@ class BaseHandler(threading.Thread):
         self.serverPassword = password
         self.serverPlugins = plugins
         self.serverLoadedPlugins = list()
+
+        #handle communication with server
         self.communicator = communicator
         self.socket = None
 
