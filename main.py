@@ -22,7 +22,7 @@ def main():
     logg.info('py-rcon is starting up!')
 
     threads = []
-    t = BF4Handler('server', '188.126.64.7', 47210, 'password', plugins=[])
+    t = BF4Handler('battlefield', 'testserver', '188.126.64.33', 47200, 'password', plugins=['ingame_admin'])
     threads.append(t)
 
     for t in threads:
