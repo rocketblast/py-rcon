@@ -1,6 +1,6 @@
 from plugins.battlefield.base import PluginBase
 
-class ingame_admin(PluginBase):
+class sample_plugin(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
 
