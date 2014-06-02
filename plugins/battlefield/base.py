@@ -72,7 +72,7 @@ class PluginBase(object):
         return
 
     @abc.abstractmethod
-    def on_rounover(self, data):
+    def on_roundover(self, data):
         ''' server.onRoundOver '''
         return
 

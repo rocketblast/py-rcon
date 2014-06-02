@@ -48,13 +48,12 @@ class BF4Handler(BaseHandler):
             self.disconnected()
             self.log.info('[{}:{}] Disconnected from server'.format(self.serverIp, self.serverPort))
 
-
             #load plugins for this instance
         else:
             self.log.error('Unable to establish a connection to [{}:{}] <{}>'.format(self.serverIp, self.serverPort, self.serverName))
 
     def events(self, plugin, event, data):
-        print "Event: {}  data: {}".format(event, data)
+        #print "Event: {}  data: {}".format(event, data)
         evts = {
             #player events
             'player.on_authenticated': plugin.on_authenticated,
