@@ -22,6 +22,7 @@ class BaseHandler(threading.Thread):
         self.log = LoggHandler.setup_logger(self.logName, '{}/logs/servers/{}.log'.format(os.getcwd(), self.logName))
         self.log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))
 
+    #Break out this to it's own class
     def connect(self):
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,9 +43,6 @@ class BaseHandler(threading.Thread):
     def load_plugins(self):
         for plugin in self.serverPlugins:
             try:
-                #__import__('plugins.{}.{}'.format(str(self.serverType), str(plugin)))
-                #importlib.import_module('plugins.{}.{}'.format(self.serverType, plugin))
-                #module = self.load_class('plugins.{}.{}'.format(str(self.serverType), str(plugin)))
                 mod = __import__('plugins.{}.{}'.format(self.serverType, plugin), fromlist=[str(plugin)])
                 nclass = getattr(mod, str(plugin))
                 self.serverLoadedPlugins.append(nclass)   #Keep track on this, might need to change it
