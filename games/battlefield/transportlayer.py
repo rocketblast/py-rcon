@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+# File: transportlayer.py
+# Description: Base class for gamehandlers
+
 import socket
 import sys
 
