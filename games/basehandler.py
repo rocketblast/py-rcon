@@ -22,7 +22,6 @@ class BaseHandler(threading.Thread):
         self.serverPassword = password
         self.serverPlugins = plugins
         self.serverLoadedPlugins = list()
-        # self.socket = None #not needed anymore
 
         #self.logName = 'bf4-{}'.format(name)
         self.log = LoggHandler.setup_logger(self.logName, '{}/logs/servers/{}.log'.format(os.getcwd(), self.logName))
