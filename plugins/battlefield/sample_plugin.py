@@ -82,7 +82,7 @@ class sample_plugin(PluginBase):
 	def __init__(self, rcon, log):
 		self.rcon = rcon  # use this to communicate back to the server
 		self.log = log    # use this if you want to log things
-		PluginBase.__init__(self)
+		PluginBase.__init__(self, rcon, log)
 
 	#########################################################
 	# RCON EVENTS 											#
