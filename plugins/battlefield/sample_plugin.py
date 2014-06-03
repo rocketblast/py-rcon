@@ -84,12 +84,12 @@ class sample_plugin(PluginBase):
 		self.log = log    # use this if you want to log things
 		PluginBase.__init__(self)
 
-#########################################################
-# Rcon events, by default you can't send anything back  #
-# You can't either remove any of these, they have to    #
-# be in your plugin. If you don't want to do anything   #
-# on a specific event, just leave it be.                #   
-#########################################################
+	#########################################################
+	# RCON EVENTS 											#
+	# You can't remove any of these, they have to be in     #
+	# your plugin. If you don't want to do anything on a    #
+	# specific event, just leave it be.                     #   
+	#########################################################
 	def on_connect(self, data):
 		return
 
