@@ -85,7 +85,7 @@ class sample_plugin(PluginBase):
 		PluginBase.__init__(self, rcon, log)
 
 	#########################################################
-	# RCON EVENTS 											#
+	# RCON EVENTS                                           #
 	# You can't remove any of these, they have to be in     #
 	# your plugin. If you don't want to do anything on a    #
 	# specific event, just leave it be.                     #   
