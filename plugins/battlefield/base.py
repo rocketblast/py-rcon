@@ -8,8 +8,9 @@ import abc
 class PluginBase(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self):
-        pass
+    def __init__(self, rcon, log):
+        self.rcon = rcon
+        self.log = log
 
     @abc.abstractmethod
     def on_connect(self, data):

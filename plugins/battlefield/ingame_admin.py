@@ -2,9 +2,7 @@ from plugins.battlefield.base import PluginBase
 
 class ingame_admin(PluginBase):
 	def __init__(self, rcon, log):
-		self.rcon = rcon
-		self.log = log
-		PluginBase.__init__(self)
+		PluginBase.__init__(self, rcon, log)
 
 	def on_connect(self, data):
 		return
