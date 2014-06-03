@@ -17,9 +17,7 @@ logg = None
 def main():
     runningpath = os.path.dirname(__file__)
     logg = LoggHandler.setup_logger('py-rcon', r'{}/logs/py-rcon.log'.format(runningpath))
-    #logg = logging.getLogger('py-rcon')
-
-    logg.info('py-rcon is starting up!')
+    #logg.info('py-rcon is starting up!')
 
     threads = []
     t = BF4Handler('battlefield', 'testserver', '188.126.64.33', 47200, 'password', plugins=['ingame_admin'])

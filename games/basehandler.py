@@ -4,6 +4,7 @@ import threading
 import importlib
 
 from helpers import LoggHandler
+from sockethandler import SocketHandler
 
 class BaseHandler(threading.Thread):
     def __init__(self, servertype, name, ip, port, password, plugins):
@@ -20,32 +21,14 @@ class BaseHandler(threading.Thread):
 
         #self.logName = 'bf4-{}'.format(name)
         self.log = LoggHandler.setup_logger(self.logName, '{}/logs/servers/{}.log'.format(os.getcwd(), self.logName))
-        self.log.info('Setup is ready for [{}:{}] - {}'.format(ip, port, name))
-
-    #Break out this to it's own class
-    def connect(self):
-        try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(1)
-            self.socket.connect((self.serverIp, self.serverPort))
-            self.socket.setblocking(1)
-            
-            return True
-        except socket.error as err:
-            self.log.error('[{}:{}] Unable to connect ({})'.format(self.serverIp, self.serverPort, err))
-            return False
-
-    def disconnect(self):
-        if self.socket:
-            self.socket.close()
-        self.socket = None
+        self.log.info('[{}:{}] <{}> - Setup is ready'.format(ip, port, name))
 
     def load_plugins(self):
         for plugin in self.serverPlugins:
             try:
                 mod = __import__('plugins.{}.{}'.format(self.serverType, plugin), fromlist=[str(plugin)])
                 nclass = getattr(mod, str(plugin))
-                self.serverLoadedPlugins.append(nclass)   #Keep track on this, might need to change it
+                self.serverLoadedPlugins.append(nclass())   #Keep track on this, might need to change it
             except Exception as ex:
                 self.log.error('Unable to load plugin: {} from path: plugins.{}.{}'.format(plugin, self.serverType, plugin)) 
                 self.log.error(ex)

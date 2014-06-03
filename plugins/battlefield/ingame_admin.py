@@ -1,69 +1,60 @@
 from plugins.battlefield.base import PluginBase
 
 class ingame_admin(PluginBase):
-	def __init__(self):
+	def __init__(self, rcon, log):
+		self.rcon = rcon
+		self.log = log
 		PluginBase.__init__(self)
 
-	@classmethod
 	def on_connect(self, data):
 		return
 
-	@classmethod
 	def on_authenticated(self, data):
 		return
 
-	@classmethod
 	def on_join(self, data):
 		return
 
-	@classmethod
 	def on_leave(self, data):
 		return
 
-	@classmethod
 	def on_spawn(self, data):
 		return
 
-	@classmethod
 	def on_kill(self, data):
 		return
 
-	@classmethod
 	def on_chat(self, data):
-		return
+		print data
+		#example on how only I can kick someone on the server
+		if data[1] == 'asabla':
+			player = data[2].split(' ')[1]
+			reason = data[2].split(' ')[2]
+			self.rcon.kickplayer(player, reason)
 
-	@classmethod
 	def on_squadchange(self, data):
 		return
 
-	@classmethod
 	def on_teamchange(self, data):
 		return
 
-	@classmethod
 	def on_pb(self, data):
 		return
 
-	@classmethod
 	def on_maxplayerchange(self, data):
 		return
 
-	@classmethod
 	def on_levelload(self, data):
 		return
 
-	@classmethod
 	def on_roundover(self, data):
 		return
 
-	@classmethod
 	def on_roundoverscore(self, data):
 		return
 
-	@classmethod
 	def on_roundoverplayers(self, data):
 		return
 
-	@classmethod
 	def on_unknown(self, data):
 		return

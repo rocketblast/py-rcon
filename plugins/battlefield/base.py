@@ -47,7 +47,7 @@ class PluginBase(object):
         return
 
     @abc.abstractmethod
-    def on_squadChange(self, data):
+    def on_squadchange(self, data):
         ''' player.onSquadChange '''
         return
 
@@ -89,4 +89,9 @@ class PluginBase(object):
     @abc.abstractmethod
     def on_unknown(self, data):
         ''' unknwon event '''
+        return
+
+    @classmethod
+    def on_test(self):
+        ''' contains nothing right now '''
         return

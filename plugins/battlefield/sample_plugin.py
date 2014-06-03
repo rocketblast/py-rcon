@@ -1,69 +1,64 @@
 from plugins.battlefield.base import PluginBase
 
 class sample_plugin(PluginBase):
-	def __init__(self):
+	# Default constructor for all plugins, don't mess with
+	# this unless you know what you are doing
+	def __init__(self, rcon, log):
+		self.rcon = rcon  # use this to communicate back to the server
+		self.log = log    # use this if you want to log things
 		PluginBase.__init__(self)
 
-	@classmethod
+#########################################################
+# Rcon events, by default you can't send anything back  #
+# You can't either remove any of these, they have to    #
+# be in your plugin. If you don't want to do anything   #
+# on a specific event, just leave it be.                #   
+#########################################################
 	def on_connect(self, data):
 		return
 
-	@classmethod
 	def on_authenticated(self, data):
 		return
 
-	@classmethod
 	def on_join(self, data):
 		return
 
-	@classmethod
 	def on_leave(self, data):
 		return
 
-	@classmethod
 	def on_spawn(self, data):
 		return
 
-	@classmethod
 	def on_kill(self, data):
 		return
 
-	@classmethod
 	def on_chat(self, data):
 		return
 
-	@classmethod
 	def on_squadchange(self, data):
 		return
 
-	@classmethod
 	def on_teamchange(self, data):
 		return
 
-	@classmethod
 	def on_pb(self, data):
 		return
 
-	@classmethod
 	def on_maxplayerchange(self, data):
 		return
 
-	@classmethod
 	def on_levelload(self, data):
 		return
 
-	@classmethod
 	def on_roundover(self, data):
 		return
 
-	@classmethod
 	def on_roundoverscore(self, data):
 		return
 
-	@classmethod
 	def on_roundoverplayers(self, data):
 		return
 
-	@classmethod
 	def on_unknown(self, data):
 		return
+#########################################################
