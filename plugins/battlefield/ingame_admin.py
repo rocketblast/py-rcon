@@ -1,9 +1,32 @@
+import os
 from plugins.battlefield.base import PluginBase
 
 class ingame_admin(PluginBase):
-	def __init__(self, rcon, log):
-		PluginBase.__init__(self, rcon, log)
+	adminlist = {}
 
+	def __init__(self, rcon, log):
+		PluginBase.__init__(self)
+		self.readAdmins()
+		self.rcon = rcon
+		self.log = log
+
+	def readAdmins(self):
+		text_file = open(os.getcwd() + '\\plugins\\battlefield\\admins.txt', 'r')
+		lines = text_file.readlines()
+
+		admins = list()
+		for line in lines:
+			line = line.replace('\n', '').replace('\r', '')
+			admins.append(line)
+		print "Loaded admins: " + str(admins)
+		return admins	#returns a collection of names
+
+	def getPlayers(self):
+		players = self.rcon.listplayer()
+		return players
+
+	# Events
+	#############################
 	def on_connect(self, data):
 		return
 
@@ -23,12 +46,21 @@ class ingame_admin(PluginBase):
 		return
 
 	def on_chat(self, data):
-		print data
 		#example on how only I can kick someone on the server
-		if data[1] == 'asabla':
-			player = data[2].split(' ')[1]
-			reason = data[2].split(' ')[2]
-			self.rcon.kickplayer(player, reason)
+		player = data[1]
+		message = data[2]
+		print data
+
+		if player == 'Server':
+			pass	#Do nothing?
+		else:
+			for admin in self.readAdmins():
+				if player == str(admin):
+					print "An admin is saying something"
+					if message.split(' ')[0] == '!kick':
+						player = message.split(' ')[1]
+						reason = message.split(' ')[2]
+						self.rcon.kickplayer(player, reason)
 
 	def on_squadchange(self, data):
 		return
