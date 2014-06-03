@@ -19,6 +19,8 @@ class ingame_admin(PluginBase):
 			line = line.replace('\n', '').replace('\r', '')
 			admins.append(line)
 		print "Loaded admins: " + str(admins)
+
+		self.adminlist = admins
 		return admins	#returns a collection of names
 
 	def getPlayers(self):
@@ -54,7 +56,7 @@ class ingame_admin(PluginBase):
 		if player == 'Server':
 			pass	#Do nothing?
 		else:
-			for admin in self.readAdmins():
+			for admin in self.adminlist:
 				if player == str(admin):
 					print "An admin is saying something"
 					if message.split(' ')[0] == '!kick':
@@ -75,7 +77,8 @@ class ingame_admin(PluginBase):
 		return
 
 	def on_levelload(self, data):
-		return
+		#When a new map is loading, then just reload adminlist
+		self.readAdmins()
 
 	def on_roundover(self, data):
 		return

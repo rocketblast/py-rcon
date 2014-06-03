@@ -104,8 +104,8 @@ class BFRCON(SocketHandler):
 			response = self.send_packet(["admin.say", message, "all"])
 		elif to == '1' or to == '2':
 			response = self.send_packet(["admin.say", message, "team", to])
-		else:
-			''' Message is to specific player, not sure if it's working yet... '''
+		else:	#Sends message to a specific user
+			response = self.send_packet(["admin.say", message, "player", to])
 
 		return response
 
