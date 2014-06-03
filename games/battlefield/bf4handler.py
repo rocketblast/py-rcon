@@ -24,6 +24,7 @@ class BF4Handler(BaseHandler):
         if self.rcon.connect():
             self.log.info('[{}:{}] <{}> - is Connected'.format(self.serverIp, self.serverPort, self.serverName))
 
+            #Tries to logon onto the server
             self.rcon.login()
             self.rcon.admin_eventsenabled(True)
 
@@ -38,6 +39,7 @@ class BF4Handler(BaseHandler):
                 # Only prints out received data when in DEBUG
                 self.log.debug('{}'.format(data))   
 
+                # Sends received event to each plugin
                 for plugin in self.serverLoadedPlugins:
                     try:
                         self.events(plugin, event, data)
@@ -52,6 +54,7 @@ class BF4Handler(BaseHandler):
         else:
             self.log.error('[{}:{}] <{}> - Unable to establish a connection'.format(self.serverIp, self.serverPort, self.serverName))
 
+    # Binds all rconevents to a method inside each plugin
     def events(self, plugin, event, data):
         #print "Event: {}  data: {}".format(event, data)
         evts = {
@@ -79,6 +82,7 @@ class BF4Handler(BaseHandler):
 
         return evts.get(event, plugin.on_unknown)(data)
 
+    # Overrides load_plugins from basehandler, due to we want both BFRCON and logg handler to be available in each plugin
     def load_plugins(self):
         for plugin in self.serverPlugins:
             try:

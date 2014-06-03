@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # File: transportlayer.py
-# Description: Base class for gamehandlers
+# Description: Is a subclass for handling battlefield connections
 
 import socket
 import sys
