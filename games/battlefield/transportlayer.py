@@ -104,13 +104,16 @@ class BFRCON(SocketHandler):
 			response = self.send_packet(["admin.say", message, "all"])
 		elif to == '1' or to == '2':
 			response = self.send_packet(["admin.say", message, "team", to])
-		else:	#Sends message to a specific user
+		else:	#Sends message to a specific player
 			response = self.send_packet(["admin.say", message, "player", to])
 
 		return response
 
 	def yell_message(self, message, duration, to):
-		response = self.send_packet(["admin.yell", message, "duration", duration, "player", str(to)])
+		if to == 'all':
+			response = self.send_packet(["admin.yell", message, duration, "all"])
+		else: #sends message to a specific player
+			response = self.send_packet(["admin.yell", message, duration, "player", to])
 		return response
 
 	def kickplayer(self, player, reason=''):
