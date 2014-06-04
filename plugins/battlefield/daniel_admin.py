@@ -4,6 +4,8 @@ import os
 
 from plugins.battlefield.base import PluginBase
 
+# A basic admin plugin for py-rcon
+
 class daniel_admin(PluginBase):
 	def __init__(self, rcon, log):
 		PluginBase.__init__(self)
@@ -13,21 +15,32 @@ class daniel_admin(PluginBase):
 		# Default values
 		self.admins = list()
 		self.prefix = "!"
-		self.public_commands = ["status", "rules", "date"]
-		self.private_commands = ["kick", "yell"]
+		self.welcome_message = ""
+		self.rules_message = ""
+		self.help_message = ""
+
+		self.public_commands = ["help", "status", "rules", "time"]
+		self.private_commands = ["say", "yell", "kick"]
 
 		# Read our config file
 		self.read_config()
 
-		self.log.info('daniel_admin Loaded')
+		self.log.info('{} loaded succesfully'.format(__name__))
 
 	def read_config(self):
 		config = ConfigParser.ConfigParser()
 		config_plugin = os.path.join("plugins", "battlefield", "daniel_admin","config.ini")
 		config.read(config_plugin)
 
-		self.prefix = config.get('plugin', 'commandprefix').strip()
-		self.admins = config.get('plugin', 'admins').split(' ')
+		# Try to load our settings. If something goes wrong, it will pass and use the defaults in the class instead
+		try:
+			self.prefix = config.get('plugin', 'commandprefix').strip()
+			self.admins = config.get('plugin', 'admins').split(' ')
+			self.welcome_message = config.get('plugin', 'welcome')
+			self.rules_message = config.get('plugin', 'rules')
+			self.help_message = config.get('plugin', 'help')
+		except:
+			pass
 
 	#########################################################
 	# RCON EVENTS                                           #
@@ -54,9 +67,10 @@ class daniel_admin(PluginBase):
 	def on_chat(self, data):
 		self.player = data[1] # Who is writing the message?
 		self.message = data[2] # The message
-		self.target = data[3] # All/Team/Player
+		self.target = data[3] # All/Team/Squad/Player
 
 		command = self.message.split(' ')[0].lower().strip(self.prefix) # Grab the command
+		self.message_clean = self.message[(self.prefix + command).__len__() + 1:] # Message without the command
 
 		# Check for public commands
 		if command in self.public_commands:
@@ -107,12 +121,24 @@ class daniel_admin(PluginBase):
 
 	# Public comands
 
-	def command_rules(self):
-		self.rcon.say_message('Our server rules lalalala', 'all')
+	def command_help(self):
+		if self.help_message:
+			self.rcon.say_message(self.help_message, 'all')
 
-	def command_date(self):
-		date = datetime.date.today()
-		self.rcon.say_message('Current date: {}'.format(date), self.player)
+		public_commands = ', {}'.format(self.prefix).join(self.public_commands)
+		self.rcon.say_message("Commands: {}".format(self.prefix) + public_commands, 'all')
+
+		# Show additional admin commands if player is an admin
+		if self.player in self.admins:
+			private_commands = ', {}'.format(self.prefix).join(self.private_commands)
+			self.rcon.say_message("Admin commands: {}".format(self.prefix) + private_commands, self.player)
+
+	def command_rules(self):
+		self.rcon.say_message(self.rules_message, 'all')
+
+	def command_time(self):
+		date = datetime.datetime.now()
+		self.rcon.say_message('Server time: {}'.format(date.strftime('%H:%M:%S')), "all")
 
 	def command_status(self):
 		if self.player in self.admins:
@@ -122,11 +148,14 @@ class daniel_admin(PluginBase):
 
 	# Private commands
 
-	def command_kick(self):
-		self.rcon.say_message('Kick player', 'all')
+	def command_say(self):
+		self.rcon.say_message(self.message_clean, 'all')
 
 	def command_yell(self):
-		print self.rcon.sendcommand(["admin.yell", self.message, "5", "all"])
+		self.rcon.sendcommand(["admin.yell", self.message_clean, "8", "all"])
+
+	def command_kick(self):
+		self.rcon.say_message('Kick player', 'all')
 
 
 #########################################################
