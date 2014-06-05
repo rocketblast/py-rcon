@@ -1,5 +1,5 @@
 import os
-from plugins.battlefield.bf4base import BF4PluginBase
+from plugins.battlefield4.bf4base import PluginBase
 
 class ingame_admin(PluginBase):
 	adminlist = {}
@@ -11,7 +11,7 @@ class ingame_admin(PluginBase):
 		self.log = log
 
 	def readAdmins(self):
-		text_file = open(os.getcwd() + '\\plugins\\battlefield\\ingame_admin\\admins.txt', 'r')
+		text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')
 		lines = text_file.readlines()
 
 		admins = list()
