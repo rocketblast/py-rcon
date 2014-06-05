@@ -55,3 +55,4 @@ docs/_build/
 .idea/
 
 main.py
+config.ini
