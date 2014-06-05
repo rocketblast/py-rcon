@@ -5,7 +5,7 @@
 
 import abc
 
-class BF4PluginBase(object):
+class PluginBase(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
