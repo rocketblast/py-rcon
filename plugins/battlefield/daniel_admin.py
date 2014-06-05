@@ -155,7 +155,24 @@ class daniel_admin(PluginBase):
 		self.rcon.sendcommand(["admin.yell", self.message_clean, "8", "all"])
 
 	def command_kick(self):
-		self.rcon.say_message('Kick player', 'all')
+		if not self.message_clean:
+			self.rcon.say_message('You have to specify a player to kick', self.player)
+			return
+
+		_temp = self.message_clean.split(' ')
+		target = _temp[0]
+
+		if len(_temp) > 1:
+			_temp.pop(0)
+			reason = ' '.join(_temp)
+		else:
+			reason = ''
+
+		kick = self.rcon.kickplayer(target, reason)
+		if kick[0] == 'InvalidPlayerName':
+			self.rcon.say_message('Could not find player {}'.format(target), self.player)
+		elif kick[0] == 'OK':
+			self.rcon.say_message('Player {} has been kicked. Reason: {}'.format(target, reason), 'all')
 
 
 #########################################################
