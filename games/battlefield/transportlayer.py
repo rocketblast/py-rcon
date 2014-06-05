@@ -153,3 +153,9 @@ class BFRCON(SocketHandler):
 	def shutdown(self):
 		response = self.send_packet(["admin.shutDown"])
 		return response
+
+	def matchplayer(self, player):
+		playerlist = self.listplayer()
+		#del playerlist[0:13] #removes header values
+
+		return playerlist

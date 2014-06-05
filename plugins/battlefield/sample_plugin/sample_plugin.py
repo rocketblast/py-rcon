@@ -74,7 +74,7 @@
 	  Will try to shutdown current server.
 '''
 
-from plugins.battlefield.base import PluginBase
+from plugins.battlefield.bf4base import BF4PluginBase
 
 class sample_plugin(PluginBase):
 	# Default constructor for all plugins, don't mess with
