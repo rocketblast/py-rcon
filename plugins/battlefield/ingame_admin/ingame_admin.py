@@ -1,5 +1,5 @@
 import os
-from plugins.battlefield.base import PluginBase
+from plugins.battlefield.bf4base import BF4PluginBase
 
 class ingame_admin(PluginBase):
 	adminlist = {}
@@ -11,7 +11,7 @@ class ingame_admin(PluginBase):
 		self.log = log
 
 	def readAdmins(self):
-		text_file = open(os.getcwd() + '\\plugins\\battlefield\\admins.txt', 'r')
+		text_file = open(os.getcwd() + '\\plugins\\battlefield\\ingame_admin\\admins.txt', 'r')
 		lines = text_file.readlines()
 
 		admins = list()
@@ -52,6 +52,7 @@ class ingame_admin(PluginBase):
 		player = data[1]
 		message = data[2]
 		print data
+		print self.rcon.matchplayer('derp')
 
 		if player == 'Server':
 			pass	#Do nothing?
