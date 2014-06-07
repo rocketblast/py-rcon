@@ -10,7 +10,7 @@ class ConfigHandler:
     """ There will be some awesome comments here later on...i hope..."""
 
     @staticmethod
-    def findAllConfigs(path):
+    def findAllConfigs(path, log=None):
         cfgs = []
 
         # Loops through the folder and finds all ini-files
@@ -22,27 +22,40 @@ class ConfigHandler:
         return cfgs
 
     @staticmethod
-    def getSection(file, section):
+    def getAllSections(file, log=None):
         Config = ConfigParser.ConfigParser()
-        Config.read(file)
-
-        dict_sections = {}
-        options = Config.options(section)
-        for option in options:
-            try:
-                #fetches any section matching given argument
-                dict_sections[option] = Config.get(section, option)
-                #if dict_sections[option] == -1:
-                    # Do some debbuging stuff here later on
-            except Exception as e:
-                print("There's a freakin exception in your confighandler!")
-                print("Here's the error: %s" % e)
-                dict_sections[option] = None	#nulls the object, just in case
-
-        return dict_sections
+        try:
+            Config.read(file)
+            sections = Config.sections()
+            return sections
+        except Exception as ex:
+            log.info("Unable to read sections, error: {}".format(ex))
 
     @staticmethod
-    def getConfig(file):
+    def getSection(file, section, log=None):
+        Config = ConfigParser.ConfigParser()
+        try:
+            Config.read(file)
+
+            dict_sections = {}
+            options = Config.options(section)
+            for option in options:
+                try:
+                    #fetches any section matching given argument
+                    dict_sections[option] = Config.get(section, option)
+                    #if dict_sections[option] == -1:
+                        # Do some debbuging stuff here later on
+                except Exception as e:
+                    print("There's a freakin exception in your confighandler!")
+                    print("Here's the error: %s" % e)
+                    dict_sections[option] = None	#nulls the object, just in case
+
+            return dict_sections
+        except Exception as ex:
+            log.info("Unable to load serverfile from: {}".format(file))
+
+    @staticmethod
+    def getConfig(file, log=None):
         Config = ConfigParser.ConfigParser()
         Config.read(file)	#might need a try'n catch here...
 

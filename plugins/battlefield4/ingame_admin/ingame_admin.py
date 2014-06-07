@@ -6,9 +6,10 @@ class ingame_admin(PluginBase):
 
 	def __init__(self, rcon, log):
 		PluginBase.__init__(self)
-		self.readAdmins()
+
 		self.rcon = rcon
 		self.log = log
+		self.readAdmins()
 
 	def readAdmins(self):
 		text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')
@@ -18,8 +19,8 @@ class ingame_admin(PluginBase):
 		for line in lines:
 			line = line.replace('\n', '').replace('\r', '')
 			admins.append(line)
-		print "Loaded admins: " + str(admins)
-
+		self.log.info("Loaded admins: " + str(admins))
+		
 		self.adminlist = admins
 		return admins	#returns a collection of names
 
@@ -51,8 +52,8 @@ class ingame_admin(PluginBase):
 		#example on how only I can kick someone on the server
 		player = data[1]
 		message = data[2]
-		print data
-		print self.rcon.matchplayer('derp')
+		#print data
+		#print self.rcon.matchplayer('derp')
 
 		if player == 'Server':
 			pass	#Do nothing?

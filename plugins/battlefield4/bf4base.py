@@ -90,8 +90,3 @@ class PluginBase(object):
     def on_unknown(self, data):
         ''' unknwon event '''
         return
-
-    @classmethod
-    def on_test(self):
-        ''' contains nothing right now '''
-        return
