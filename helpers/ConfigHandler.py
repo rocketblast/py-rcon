@@ -29,7 +29,7 @@ class ConfigHandler:
             sections = Config.sections()
             return sections
         except Exception as ex:
-            log.info("Unable to read sections, error: {}".format(ex))
+            log.error("Unable to read sections, error: {}".format(ex))
 
     @staticmethod
     def getSection(file, section, log=None):
@@ -37,22 +37,26 @@ class ConfigHandler:
         try:
             Config.read(file)
 
-            dict_sections = {}
-            options = Config.options(section)
-            for option in options:
-                try:
-                    #fetches any section matching given argument
-                    dict_sections[option] = Config.get(section, option)
-                    #if dict_sections[option] == -1:
-                        # Do some debbuging stuff here later on
-                except Exception as e:
-                    print("There's a freakin exception in your confighandler!")
-                    print("Here's the error: %s" % e)
-                    dict_sections[option] = None	#nulls the object, just in case
+            if Config.has_section(section):
+                dict_sections = {}
+                options = Config.options(section)
+                for option in options:
+                    try:
+                        #fetches any section matching given argument
+                        dict_sections[option] = Config.get(section, option)
+                        #if dict_sections[option] == -1:
+                            # Do some debbuging stuff here later on
+                    except Exception as e:
+                        print("There's a freakin exception in your confighandler!")
+                        print("Here's the error: %s" % e)
+                        dict_sections[option] = None	#nulls the object, just in case
 
-            return dict_sections
+                return dict_sections
+            else:
+                log.error("Found no section: {} in file: {}".format(section, file))
+                return ""
         except Exception as ex:
-            log.info("Unable to load serverfile from: {}".format(file))
+            log.error("Unable to load serverfile from: {}".format(file))
 
     @staticmethod
     def getConfig(file, log=None):
