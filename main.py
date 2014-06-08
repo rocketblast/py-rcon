@@ -47,7 +47,7 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
     if configfile == "" and serverfolder == "" or serverfile == "":  #Nothing is specified, GO DEFAULT!
         #ADD CHECKS FOR: create file if not exsists, if exsist try to parse it!
         logg.debug("No arguments given, goes for default settings")
-        settings = ConfigHandler.getSection('{}\config.ini'.format(runningpath), 'py-rcon', logg)
+        settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
     elif configfile != "":  #configfile is given, tries to load it
         logg.debug("Configfile found, tries to load it")
         settings = ConfigHandler.getSection('{}', logg)

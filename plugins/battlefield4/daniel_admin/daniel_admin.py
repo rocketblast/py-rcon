@@ -2,7 +2,7 @@ import ConfigParser
 import datetime
 import os
 
-from plugins.battlefield.base import PluginBase
+from plugins.battlefield4.bf4base import PluginBase
 
 # A basic admin plugin for py-rcon
 
@@ -20,7 +20,7 @@ class daniel_admin(PluginBase):
 		self.help_message = ""
 
 		self.public_commands = ["help", "status", "rules", "time"]
-		self.private_commands = ["say", "yell", "kick"]
+		self.private_commands = ["say", "yell", "warn", "kick", "ban"]
 
 		# Read our config file
 		self.read_config()
@@ -29,8 +29,7 @@ class daniel_admin(PluginBase):
 
 	def read_config(self):
 		config = ConfigParser.ConfigParser()
-		config_plugin = os.path.join("plugins", "battlefield", "daniel_admin","config.ini")
-		config.read(config_plugin)
+		config.read("config.ini")
 
 		# Try to load our settings. If something goes wrong, it will pass and use the defaults in the class instead
 		try:
@@ -154,6 +153,31 @@ class daniel_admin(PluginBase):
 	def command_yell(self):
 		self.rcon.sendcommand(["admin.yell", self.message_clean, "8", "all"])
 
+	def command_warn(self):
+		if not self.message_clean:
+			self.rcon.say_message('You have to specify a player to warn', self.player)
+			return
+
+		_temp = self.message_clean.split(' ')
+		target = _temp[0]
+
+		if len(_temp) < 2:
+			self.rcon.say_message('You have to specify a reason', self.player)
+			return
+
+		_temp.pop(0)
+		reason = ' '.join(_temp)
+
+		warn = self.rcon.sendcommand(["admin.yell", "Warning: {}".format(reason), "10", "player", target])
+		if warn[0] == 'PlayerNotFound':
+			self.rcon.say_message('Could not find player {}'.format(target), self.player)
+		elif warn[0] == 'MessageIsTooLong':
+			self.rcon.say_message('Message is too long', self.player)
+		elif warn[0] == 'OK':
+			self.rcon.say_message('Warning: {}'.format(reason), target)
+			self.rcon.say_message('Sent warning to {}'.format(target), self.player)
+
+
 	def command_kick(self):
 		if not self.message_clean:
 			self.rcon.say_message('You have to specify a player to kick', self.player)
@@ -173,6 +197,9 @@ class daniel_admin(PluginBase):
 			self.rcon.say_message('Could not find player {}'.format(target), self.player)
 		elif kick[0] == 'OK':
 			self.rcon.say_message('Player {} has been kicked. Reason: {}'.format(target, reason), 'all')
+
+	def command_ban(self):
+		return
 
 
 #########################################################
