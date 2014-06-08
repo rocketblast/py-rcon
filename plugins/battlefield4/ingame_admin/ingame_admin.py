@@ -12,7 +12,9 @@ class ingame_admin(PluginBase):
 		self.readAdmins()
 
 	def readAdmins(self):
-		text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')
+		#text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')
+		__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+		text_file = open(os.path.join(__location__, 'admins.txt'))
 		lines = text_file.readlines()
 
 		admins = list()
@@ -80,6 +82,7 @@ class ingame_admin(PluginBase):
 
 	def on_levelload(self, data):
 		#When a new map is loading, then just reload adminlist
+		self.log.debug("Server is loading next map, tries to reload adminlist")
 		self.readAdmins()
 
 	def on_roundover(self, data):
