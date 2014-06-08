@@ -22,7 +22,6 @@ class LoggHandler(object):
     def setup_logger(logger_name, log_file, level=logging.INFO):
         #if directory does not exsists, then just create it
         path = log_file.rsplit('/', 1)[0] #removes filename for log, e.g /example/example.log into /example/
-        print "path: " + log_file.rsplit('/', 1)[0]
         if not os.path.exists(path):
             os.makedirs(path)
 
