@@ -32,11 +32,10 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
         loglevel = logging.INFO
 
     if logslocation == "":
-        logdir = '{}\\logs\\py-rcon.log'.format(runningpath)
-        logg = LoggHandler.setup_logger('py-rcon', r'{}'.format(logdir), loglevel)
+        logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(os.getcwd(), 'py-rcon'), loglevel)
     else:
         logdir = '{}\\py-rcon.log'.format(logslocation)
-        logg = LoggHandler.setup_logger('py-rcon', r'{}'.format(logdir), loglevel)
+        logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(logdir, 'py-rcon'), loglevel)
     ########################################################################
 
     logg.info("Starting up py-rcon...")
@@ -50,9 +49,10 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
         logg.debug("No arguments given, goes for default settings")
         settings = ConfigHandler.getSection('{}\config.ini'.format(runningpath), 'py-rcon', logg)
     elif configfile != "":  #configfile is given, tries to load it
+        logg.debug("Configfile found, tries to load it")
         settings = ConfigHandler.getSection('{}', logg)
     else:
-        logg.warn("Unable to figure out what to do, report this problem")
+        logg.warn("Unable to figure out what to do, report this problem with error 22")
 
     # Single server file, with possible multiple server configs
     ###########################################
@@ -60,7 +60,7 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
     if settings["serverfile"] != None:
         try:
             sections = ConfigHandler.getAllSections(settings["serverfile"], logg)
-            logg.info("Loaded serverfile: {}".format(settings["serverfile"]))
+            logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
 
             if sections:
                 # Tries to load all server configs inside config-file
@@ -80,10 +80,10 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
             else:
                 logg.info("Unable to find anything in serverfile")
         except Exception as ex:
-            logg.info("Unable to load serverfile: {}".format(settings["serverfile"]))
+            logg.error("Unable to load serverfile: {}".format(settings["serverfile"]))
             logg.error("Error: {}".format(ex))
     else:
-        logg.info("There is no serverfile specified")
+        logg.debug("There is no serverfile specified")
     ###########################################
 
     # Multiple server files, with only one server config per file
@@ -103,11 +103,11 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
                     elif s["game"] == "battlefield3":
                         print "Found Battlefield 3 game"
                     else:
-                        logg.info("Game name: {} is not supported".format(s["name"]))
+                        logg.warn("Game name: {} is not supported".format(s["name"]))
         except Exception as ex:
-            logg.info("Unable to load serverfiles in folder: {}".format(settings["serverfolder"]))
+            logg.error("Unable to load serverfiles in folder: {}".format(settings["serverfolder"]))
     else:
-        logg.info("There is no serverfolder specified")
+        logg.debug("There is no serverfolder specified")
 
     ###########################################
 
@@ -133,7 +133,6 @@ if __name__ == '__main__':
         to different types of gameservers.''') #come up with a better description...
     parser.add_argument('-c', '--config', metavar='file', type=argparse.FileType('r'), 
         help='''configuration file for py-rcon, if non given then log, server or server directory must be specified. 
-
         Example: main.py -l C:\logs -sf C:\configs''')
     parser.add_argument('-l', '--log', metavar='folder', help='Location were your log files will be stored')
     parser.add_argument('-sf', '--serverfile', metavar='file', type=argparse.FileType('r'),
@@ -146,7 +145,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.config != "" or args.log != "" or serverfile != "" or serverdirectory != "" or debug != None:
-        #config = json.load(args.config)
+        # Tries to check if startup parameters are set, if not just set them to empty string or False
         config = json.load(args.config) if args.config != None else ""
         log = json.load(args.log) if args.log != None else ""
         serverfile = json.load(args.serverfile) if args.serverfile != None else ""
