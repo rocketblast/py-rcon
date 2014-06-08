@@ -57,7 +57,7 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
     # Single server file, with possible multiple server configs
     ###########################################
     #if serverfile isset, then tries to load it
-    if settings["serverfile"] != None or settings["serverfile"] != "":
+    if settings != "":
         try:
             sections = ConfigHandler.getAllSections(settings["serverfile"], logg)
             logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
@@ -88,7 +88,7 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
 
     # Multiple server files, with only one server config per file
     ###########################################
-    if settings["serverfolder"] != "":
+    if settings != "":
         try:
             cfgFiles = ConfigHandler.findAllConfigs(settings["serverfolder"])
 
