@@ -47,8 +47,8 @@ class ConfigHandler:
                         #if dict_sections[option] == -1:
                             # Do some debbuging stuff here later on
                     except Exception as e:
-                        print("There's a freakin exception in your confighandler!")
-                        print("Here's the error: %s" % e)
+                        log.error("Unable to get config section")
+                        log.error("Error: {}".format(e))
                         dict_sections[option] = None	#nulls the object, just in case
 
                 return dict_sections
@@ -61,14 +61,12 @@ class ConfigHandler:
     @staticmethod
     def getConfig(file, log=None):
         Config = ConfigParser.ConfigParser()
-        Config.read(file)	#might need a try'n catch here...
 
-        dict_config = {}
         try:
-            dict_config = Config._sections
+            Config.read(file)
         except Exception as e:
-            print("There is a scary exception reading your entire configfile!")
-            print("Here's the error: %s" % e)
-            dict_config = None	#nulls the object, just in case
+            log.error("Unable to read config file")
+            log.error("Error: {}".format(e))
+            Config = None	#nulls the object, just in case
 
-        return dict_config
+        return Config

@@ -17,50 +17,60 @@ from games.battlefield import BF4Handler
 
 logg = None
 
-def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=False):
+def main(args):
     # Logs
     ########################################################################
-    runningpath = os.path.dirname(__file__)
     logdir = "" # Will be used as an argument to the handlers (so they know were to put logs)
     threads = []    #array were we store all threads
 
+
     # If log directory is not set, then just create logs were py-rcon is running
     ########################################################################
-    if debug == True:
+    if args.debug:
         loglevel = logging.DEBUG
     else:
         loglevel = logging.INFO
 
-    if logslocation == "":
-        logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(os.getcwd(), 'py-rcon'), loglevel)
+    # if a different path for logs has been given in startup, then use it
+    if args.log:
+        logdir = '{}/py-rcon.log'.format(args.log)
+        logg = LoggHandler.setup_logger('py-rcon', logdir, loglevel)
     else:
-        logdir = '{}\\py-rcon.log'.format(logslocation)
-        logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(logdir, 'py-rcon'), loglevel)
+        # If no location for logs has been given, then just go default
+        logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(os.getcwd(), 'py-rcon'), loglevel)
     ########################################################################
 
-    logg.info("Starting up py-rcon...")
-    logg.debug("Debug has been activated!")
+    if args.debug:
+        logg.debug("Starting up py-rcon in debug...")
+    else:
+        logg.info("Starting up py-rcon...")
     logg.info("---------------------------")
+
 
     # Read server config/s
     ########################################################################
-    if configfile == "" and serverfolder == "" or serverfile == "":  #Nothing is specified, GO DEFAULT!
+    if args.config == 'config.ini' and args.serverfolder != None or args.serverfile == None:  #Nothing is specified, GO DEFAULT!
         #ADD CHECKS FOR: create file if not exsists, if exsist try to parse it!
         logg.debug("No arguments given, goes for default settings")
-        settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
-    elif configfile != "":  #configfile is given, tries to load it
+        settings = ConfigHandler.getConfig('{}/{}'.format(os.getcwd(), args.config), logg)
+        logg.debug("Loaded configfile: {}".format(args.config))
+        #settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
+    elif configfile != 'config.ini':  #configfile is given, tries to load it
         logg.debug("Configfile found, tries to load it")
-        settings = ConfigHandler.getSection('{}', logg)
+        #settings = ConfigHandler.getSection('{}', logg)
+        settings = ConfigHandler.getConfig('', logg)
+        logg.debug("Loaded configfile: {}".format(args.config))
     else:
         logg.warn("Unable to figure out what to do, report this problem with error 22")
+
 
     # Single server file, with possible multiple server configs
     ###########################################
     #if serverfile isset, then tries to load it
-    if settings != "":
+    if settings:
         try:
             sections = ConfigHandler.getAllSections(settings["serverfile"], logg)
-            logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
+            #logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
 
             if sections:
                 # Tries to load all server configs inside config-file
@@ -124,34 +134,50 @@ def main(configfile="", logslocation="", serverfolder="", serverfile="", debug=F
     	while True:
     		time.sleep(1)
     except KeyboardInterrupt:
+        logg.info("---------------------------")
     	sys.exit('Ctrl^C received - exiting!')
     ########################################################################
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='''Py-rcon v0.9 by Rocketblast 2014, a mini-framework for handling connections 
-        to different types of gameservers.''') #come up with a better description...
-    parser.add_argument('-c', '--config', metavar='file', type=argparse.FileType('r'), 
-        help='''configuration file for py-rcon, if non given then log, server or server directory must be specified. 
-        Example: main.py -l C:\logs -sf C:\configs''')
-    parser.add_argument('-l', '--log', metavar='folder', help='Location were your log files will be stored')
-    parser.add_argument('-sf', '--serverfile', metavar='file', type=argparse.FileType('r'),
-        help='Location of the single server configuration file (multiple server configs in one file')
-    parser.add_argument('-sd', '--serverdirectory', metavar='folder', 
-        help='Path to a directory containing server configuration files')
-    parser.add_argument('-d', '--debug', 
-        help='If set to true, console will print out more status messages. Can be used for debbuging your plugin')
+    parser = argparse.ArgumentParser(description='''
+        Py-rcon v1.0 by Rocketblast 2014, a mini framework for handling connections to different 
+        types of gameservers.
+        ''')
+    parser.add_argument('-c', '--config', default='config.ini', help='''
+        Default configuration file for py-rcon, if none given it tries to open config.ini in the same folder 
+        as main.py. If it does not exist then it will create it. Config.ini can contain server configuration 
+        as well.
+        ''')
+    parser.add_argument('-l', '--log', metavar='folder', help='''
+        Path to log files, if none given then a default folder will be created inside the same folder as 
+        main.py
+        ''')
+    parser.add_argument('-sf', '--serverfolder', metavar='folder', help='''
+        Path to were configuration file/s are located. This should be used when multiple files for 
+        configuration is expected. Have no default value.
+        ''')
+    parser.add_argument('-s', '--serverfile', help='''
+        Path to a configuration file for server/s (should be .ini). This should be used when a single 
+        file is expected. Have no default value.
+        ''')
+    parser.add_argument('-d', '--debug', action='store_true', help='''
+        Use debug flag to get more information printed out in both console and log files.
+        ''')
+
+    #parser = argparse.ArgumentParser(description='''Py-rcon v0.9 by Rocketblast 2014, a mini-framework for handling connections 
+    #    to different types of gameservers.''') #come up with a better description...
+    #parser.add_argument('-c', '--config', metavar='file', type=argparse.FileType('r'), 
+    #    help='''configuration file for py-rcon, if non given then log, server or server directory must be specified. 
+    #    Example: main.py -l C:\logs -sf C:\configs''')
+    #parser.add_argument('-l', '--log', metavar='folder', help='Location were your log files will be stored')
+    #parser.add_argument('-sf', '--serverfile', metavar='file', type=argparse.FileType('r'),
+    #    help='Location of the single server configuration file (multiple server configs in one file')
+    #parser.add_argument('-sd', '--serverdirectory', metavar='folder', 
+    #    help='Path to a directory containing server configuration files')
+    #parser.add_argument('-d', '--debug', 
+    #    help='If set to true, console will print out more status messages. Can be used for debbuging your plugin')
 
     args = parser.parse_args()
 
-    if args.config != "" or args.log != "" or serverfile != "" or serverdirectory != "" or debug != None:
-        # Tries to check if startup parameters are set, if not just set them to empty string or False
-        config = json.load(args.config) if args.config != None else ""
-        log = json.load(args.log) if args.log != None else ""
-        serverfile = json.load(args.serverfile) if args.serverfile != None else ""
-        serverdirectory = json.load(args.serverdirectory) if args.serverdirectory != None else ""
-        debug = bool(args.debug) if bool(args.debug) == True else False
-        
-        main(config, log, serverfile, serverdirectory, debug)
-    else:
-        main()
+    main(args)

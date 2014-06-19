@@ -30,7 +30,7 @@ class LoggHandler(object):
                                     datefmt='%Y-%m-%d %H:%M:%S')
 
         #by default it runs a rotating filehandler for looping through log files
-        filehandler = logging.handlers.RotatingFileHandler(log_file, maxBytes=1024 * 1024 * 100, backupCount=20)
+        filehandler = logging.handlers.RotatingFileHandler(log_file, mode='r', maxBytes=1024 * 1024 * 100, backupCount=20)
         filehandler.setFormatter(formatter)
 
         #basically for printing out messages to the console it self
