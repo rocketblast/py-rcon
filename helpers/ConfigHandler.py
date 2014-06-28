@@ -69,4 +69,12 @@ class ConfigHandler:
             log.error("Error: {}".format(e))
             Config = None	#nulls the object, just in case
 
-        return Config
+        # Check if config file does exist
+        if Config.sections() != []:
+            log.debug("Loaded config: {}".format(file))
+
+            return Config
+        else:
+            log.debug("Didn't find: {}".format(file))
+
+            return None

@@ -51,25 +51,24 @@ def main(args):
     ########################################################################
     if args.config == 'config.ini' and args.serverfolder != None or args.serverfile == None:  #Nothing is specified, GO DEFAULT!
         #ADD CHECKS FOR: create file if not exsists, if exsist try to parse it!
-        logg.debug("No arguments given, goes for default settings")
+        logg.debug('No arguments given, goes for default settings')
         settings = ConfigHandler.getConfig('{}/{}'.format(os.getcwd(), args.config), logg)
-        logg.debug("Loaded configfile: {}".format(args.config))
         #settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
     elif configfile != 'config.ini':  #configfile is given, tries to load it
-        logg.debug("Configfile found, tries to load it")
+        logg.debug('Configfile found, tries to load it')
         #settings = ConfigHandler.getSection('{}', logg)
-        settings = ConfigHandler.getConfig('', logg)
-        logg.debug("Loaded configfile: {}".format(args.config))
+        settings = ConfigHandler.getConfig('{}'.format(args.config), logg)
     else:
-        logg.warn("Unable to figure out what to do, report this problem with error 22")
+        logg.warn('Unable to figure out what to do, report this problem with error 22')
 
 
     # Single server file, with possible multiple server configs
     ###########################################
     #if serverfile isset, then tries to load it
-    if settings:
+    #if settings.get('py-rcon', 'serverfile'):
+    if settings != None:
         try:
-            sections = ConfigHandler.getAllSections(settings["serverfile"], logg)
+            sections = ConfigHandler.getAllSections(args.serverfile, logg)
             #logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
 
             if sections:
@@ -90,7 +89,7 @@ def main(args):
             else:
                 logg.info("Unable to find anything in serverfile")
         except Exception as ex:
-            logg.error("Unable to load serverfile: {}".format(settings["serverfile"]))
+            #logg.error("Unable to load serverfile: {}".format(settings["serverfile"]))
             logg.error("Error: {}".format(ex))
     else:
         logg.debug("There is no serverfile specified")
@@ -98,9 +97,9 @@ def main(args):
 
     # Multiple server files, with only one server config per file
     ###########################################
-    if settings != "":
+    if settings != None:
         try:
-            cfgFiles = ConfigHandler.findAllConfigs(settings["serverfolder"])
+            cfgFiles = ConfigHandler.findAllConfigs(args.serverfolder)
 
             if cfgFiles:    #might need to count number of results
                 for cfg in cfgFiles:    # Foreach file, load config
@@ -115,7 +114,7 @@ def main(args):
                     else:
                         logg.warn("Game name: {} is not supported".format(s["name"]))
         except Exception as ex:
-            logg.error("Unable to load serverfiles in folder: {}".format(settings["serverfolder"]))
+            logg.error("Unable to load serverfiles in folder: {}".format(args.serverfolder))
     else:
         logg.debug("There is no serverfolder specified")
 
