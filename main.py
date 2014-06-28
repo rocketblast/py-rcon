@@ -23,7 +23,6 @@ def main(args):
     logdir = "" # Will be used as an argument to the handlers (so they know were to put logs)
     threads = []    #array were we store all threads
 
-
     # If log directory is not set, then just create logs were py-rcon is running
     ########################################################################
     if args.debug:
@@ -40,17 +39,11 @@ def main(args):
         logg = LoggHandler.setup_logger('py-rcon', '{}/logs/{}.log'.format(os.getcwd(), 'py-rcon'), loglevel)
     ########################################################################
 
-    if args.debug:
-        logg.debug("Starting up py-rcon in debug...")
-    else:
-        logg.info("Starting up py-rcon...")
-    logg.info("---------------------------")
-
 
     # Read server config/s
     ########################################################################
-    if args.config == 'config.ini' and args.serverfolder != None or args.serverfile == None:  #Nothing is specified, GO DEFAULT!
-        #ADD CHECKS FOR: create file if not exsists, if exsist try to parse it!
+    #if args.config == 'config.ini' and args.serverfolder == None or args.serverfile == None:  #Nothing is specified, GO DEFAULT!
+    if args.config == 'config.ini':
         logg.debug('No arguments given, goes for default settings')
         settings = ConfigHandler.getConfig('{}/{}'.format(os.getcwd(), args.config), logg)
         #settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
@@ -60,6 +53,17 @@ def main(args):
         settings = ConfigHandler.getConfig('{}'.format(args.config), logg)
     else:
         logg.warn('Unable to figure out what to do, report this problem with error 22')
+    ########################################################################
+
+
+    # If debug is given, then print out more messages and information both in console and logfiles
+    ########################################################################    
+    if args.debug:
+        logg.debug("Starting up py-rcon in debug...")
+    else:
+        logg.info("Starting up py-rcon...")
+    logg.info("---------------------------")
+    ########################################################################
 
 
     # Single server file, with possible multiple server configs
@@ -68,6 +72,7 @@ def main(args):
     #if settings.get('py-rcon', 'serverfile'):
     if settings != None:
         try:
+            # FIX SO IT TRIES TO READ THE SAME FILE AND/OR ANOTHER FILE
             sections = ConfigHandler.getAllSections(args.serverfile, logg)
             #logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
 
@@ -87,12 +92,12 @@ def main(args):
                         else:
                             logg.info('Game name: {} is not supported'.format(s["name"]))
             else:
-                logg.info("Unable to find anything in serverfile")
+                logg.info("Unable to find any sections in config file")
         except Exception as ex:
             #logg.error("Unable to load serverfile: {}".format(settings["serverfile"]))
             logg.error("Error: {}".format(ex))
     else:
-        logg.debug("There is no serverfile specified")
+        logg.debug("There is no settings in your config file")
     ###########################################
 
     # Multiple server files, with only one server config per file

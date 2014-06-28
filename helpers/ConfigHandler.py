@@ -24,16 +24,25 @@ class ConfigHandler:
     @staticmethod
     def getAllSections(file, log=None):
         Config = ConfigParser.ConfigParser()
+        ConfigHandler.ifFile(file, log)
+        
         try:
             Config.read(file)
-            sections = Config.sections()
-            return sections
+
+            if Config:
+                sections = Config.sections()
+                return sections
+            else:
+                log.debug("No sections was found in config file")
+                return None
         except Exception as ex:
             log.error("Unable to read sections, error: {}".format(ex))
 
     @staticmethod
     def getSection(file, section, log=None):
         Config = ConfigParser.ConfigParser()
+        ConfigHandler.ifFile(file, log)
+
         try:
             Config.read(file)
 
@@ -61,6 +70,7 @@ class ConfigHandler:
     @staticmethod
     def getConfig(file, log=None):
         Config = ConfigParser.ConfigParser()
+        ConfigHandler.ifFile(file, log)
 
         try:
             Config.read(file)
@@ -70,7 +80,7 @@ class ConfigHandler:
             Config = None	#nulls the object, just in case
 
         # Check if config file does exist
-        if Config.sections() != []:
+        if Config:
             log.debug("Loaded config: {}".format(file))
 
             return Config
@@ -78,3 +88,22 @@ class ConfigHandler:
             log.debug("Didn't find: {}".format(file))
 
             return None
+
+    @staticmethod
+    def ifFile(filepath, log):
+        if os.path.exists(filepath):
+            log.debug("Config exists at location: {}".format(filepath))
+        else:
+            log.debug("Config does not exists, tries to create it")
+            try:
+                f = file(filepath, "w")
+                f.write("[py-rcon]\n")
+                f.write("plugins:\n")
+                f.write("serverfile:\n")
+                f.write("serverfolder:\n")
+                f.close()
+
+                log.info("Config did not exists, so created it at location: {}".format(filepath))
+            except Exception as e:
+                log.error("Unable to auto create a configfile at path: {}".format(filepath))
+                log.error("With error: {}".format(e))
