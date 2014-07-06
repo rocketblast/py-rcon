@@ -91,6 +91,7 @@ class ConfigHandler:
 
     @staticmethod
     def ifFile(filepath, log):
+        log.debug("Tries to check if file exists: {}".format(filepath))
         if os.path.exists(filepath):
             log.debug("Config exists at location: {}".format(filepath))
         else:

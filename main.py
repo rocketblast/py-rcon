@@ -18,19 +18,30 @@ from games.battlefield import BF4Handler
 logg = None
 
 def main(args):
+    # 1. Check for arguments
+    # 1.a If non given then go for default values
+    # 1.b If -c given, try to open config file
+    # 1.c If -l given, try to find folder, if not found create it
+    # 1.d If -sf given, try to find folder with config files in it
+    # 1.e If -s given, try to open a file with server configuration
+    # 1.f If -d given, run program in debug, prints out more messages
+    # 2. Handle configuration (default or given arguments)
+    # 3. Connect to all servers
+
+
     # Logs
     ########################################################################
     logdir = "" # Will be used as an argument to the handlers (so they know were to put logs)
     threads = []    #array were we store all threads
 
-    # If log directory is not set, then just create logs were py-rcon is running
+    # Check if argument debug isset, if not go for default (INFO)
     ########################################################################
     if args.debug:
         loglevel = logging.DEBUG
     else:
         loglevel = logging.INFO
 
-    # if a different path for logs has been given in startup, then use it
+    # If argument log isset, then tries to create a log file (and folder) at path
     if args.log:
         logdir = '{}/py-rcon.log'.format(args.log)
         logg = LoggHandler.setup_logger('py-rcon', logdir, loglevel)
@@ -42,14 +53,11 @@ def main(args):
 
     # Read server config/s
     ########################################################################
-    #if args.config == 'config.ini' and args.serverfolder == None or args.serverfile == None:  #Nothing is specified, GO DEFAULT!
     if args.config == 'config.ini':
         logg.debug('No arguments given, goes for default settings')
         settings = ConfigHandler.getConfig('{}/{}'.format(os.getcwd(), args.config), logg)
-        #settings = ConfigHandler.getSection('{}/config.ini'.format(os.getcwd()), 'py-rcon', logg)
     elif configfile != 'config.ini':  #configfile is given, tries to load it
         logg.debug('Configfile found, tries to load it')
-        #settings = ConfigHandler.getSection('{}', logg)
         settings = ConfigHandler.getConfig('{}'.format(args.config), logg)
     else:
         logg.warn('Unable to figure out what to do, report this problem with error 22')
@@ -59,6 +67,7 @@ def main(args):
     # If debug is given, then print out more messages and information both in console and logfiles
     ########################################################################    
     if args.debug:
+        logg.debug("Config has been loaded")
         logg.debug("Starting up py-rcon in debug...")
     else:
         logg.info("Starting up py-rcon...")
@@ -68,19 +77,27 @@ def main(args):
 
     # Single server file, with possible multiple server configs
     ###########################################
-    #if serverfile isset, then tries to load it
-    #if settings.get('py-rcon', 'serverfile'):
     if settings != None:
-        try:
-            # FIX SO IT TRIES TO READ THE SAME FILE AND/OR ANOTHER FILE
-            sections = ConfigHandler.getAllSections(args.serverfile, logg)
+        # if serverfile is passed as an argument, then override anything in the configfile
+        serverfile = None
+        if args.serverfile != None:
+            serverfile = args.serverfile
+        elif settings.get('py-rcon', 'serverfile') != "":
+            serverfile = settings.get('py-rcon', 'serverfile')
+        else:
+            serverfile = ""
+            logg.debug("Unable to find any value for serverfile")
+
+        if serverfile:
+            logg.debug("Serverfile has been set to: {}".format(serverfile))
+            sections = ConfigHandler.getAllSections(serverfile, logg)
             #logg.debug("Loaded serverfile: {}".format(settings["serverfile"]))
 
             if sections:
                 # Tries to load all server configs inside config-file
                 for sect in sections:
-                    if sect.lower().startswith("server"):   # To make sure it only loads server configs
-                        s = ConfigHandler.getSection(settings["serverfile"], sect, logg)
+                    if sect.lower().startswith("py-rcon") == False:   # To make sure it only loads server configs
+                        s = ConfigHandler.getSection(serverfile, sect, logg)
 
                         # Checks for supported gameserver types
                         if s["game"] == "battlefield4":
@@ -91,13 +108,14 @@ def main(args):
                             print "Found Battlefield 3 game"
                         else:
                             logg.info('Game name: {} is not supported'.format(s["name"]))
+                    else:
+                        logg.info("Unable to find any sections in config file")
             else:
-                logg.info("Unable to find any sections in config file")
-        except Exception as ex:
-            #logg.error("Unable to load serverfile: {}".format(settings["serverfile"]))
-            logg.error("Error: {}".format(ex))
+                logg.debug("There is no settings in your config file")
+        else:
+            logg.debug("Setting serverfile is not set")
     else:
-        logg.debug("There is no settings in your config file")
+        logg.debug("Settings were None, report this error with code 33")
     ###########################################
 
     # Multiple server files, with only one server config per file
