@@ -6,6 +6,11 @@ from plugins.battlefield4.bf4base import PluginBase
 
 # A basic admin plugin for py-rcon
 
+# Todo
+# - More logging
+# - Better config loading
+# - Move players in game modes more than 2 teams
+
 class daniel_admin(PluginBase):
 	def __init__(self, rcon, log):
 		PluginBase.__init__(self)
@@ -20,7 +25,7 @@ class daniel_admin(PluginBase):
 		self.help_message = ""
 
 		self.public_commands = ["help", "status", "rules", "time"]
-		self.private_commands = ["say", "yell", "warn", "kick", "ban"]
+		self.private_commands = ["say", "yell", "warn", "kick", "ban", "move"]
 
 		# Read our config file
 		self.read_config()
@@ -29,17 +34,32 @@ class daniel_admin(PluginBase):
 
 	def read_config(self):
 		config = ConfigParser.ConfigParser()
-		config.read("config.ini")
+		config_plugin = os.path.join("plugins", "battlefield4", "daniel_admin","plugin.ini")
+		config.read(config_plugin)
 
 		# Try to load our settings. If something goes wrong, it will pass and use the defaults in the class instead
+		# This could probably be done more beautiful!
 		try:
 			self.prefix = config.get('plugin', 'commandprefix').strip()
+		except:
+			pass
+
+		try:
 			self.admins = config.get('plugin', 'admins').split(' ')
-			self.welcome_message = config.get('plugin', 'welcome')
+		except:
+			pass
+
+		try:
 			self.rules_message = config.get('plugin', 'rules')
+		except:
+			pass
+
+		try:
 			self.help_message = config.get('plugin', 'help')
 		except:
 			pass
+
+		self.log.info('Admins loaded: {}'.format(self.admins))
 
 	#########################################################
 	# RCON EVENTS                                           #
@@ -99,6 +119,8 @@ class daniel_admin(PluginBase):
 		return
 
 	def on_levelload(self, data):
+		# Re-read our config file on map change
+		self.read_config()
 		return
 
 	def on_roundover(self, data):
@@ -112,7 +134,6 @@ class daniel_admin(PluginBase):
 
 	def on_unknown(self, data):
 		return
-
 
 	#########################################################
 	# COMMANDS                                              #
@@ -148,9 +169,17 @@ class daniel_admin(PluginBase):
 	# Private commands
 
 	def command_say(self):
+		if not self.message_clean:
+			self.rcon.say_message('You have to enter a message', self.player)
+			return
+
 		self.rcon.say_message(self.message_clean, 'all')
 
 	def command_yell(self):
+		if not self.message_clean:
+			self.rcon.say_message('You have to enter a message', self.player)
+			return
+
 		self.rcon.sendcommand(["admin.yell", self.message_clean, "8", "all"])
 
 	def command_warn(self):
@@ -174,9 +203,9 @@ class daniel_admin(PluginBase):
 		elif warn[0] == 'MessageIsTooLong':
 			self.rcon.say_message('Message is too long', self.player)
 		elif warn[0] == 'OK':
+			self.rcon.sendcommand(["admin.killPlayer", target])
 			self.rcon.say_message('Warning: {}'.format(reason), target)
 			self.rcon.say_message('Sent warning to {}'.format(target), self.player)
-
 
 	def command_kick(self):
 		if not self.message_clean:
@@ -199,7 +228,133 @@ class daniel_admin(PluginBase):
 			self.rcon.say_message('Player {} has been kicked. Reason: {}'.format(target, reason), 'all')
 
 	def command_ban(self):
+		if not self.message_clean:
+			self.rcon.say_message('You have to specify a player to ban', self.player)
+			return
+
+		_temp = self.message_clean.split(' ')
+		target = _temp[0]
+
+		if len(_temp) < 2:
+			self.rcon.say_message('You have to specify a ban duration', self.player)
+			return
+		else:
+			duration = _temp[1]
+		
+		# Convert input duration to seconds
+		if duration.endswith('h'):
+			duration = int(duration[:-1]) * 60 * 60
+		elif duration.endswith('d'):
+			duration = int(duration[:-1]) * 24 * 60 * 60
+		elif duration.endswith('w'):
+			duration = int(duration[:-1]) * 7 * 24 * 60 * 60
+		elif duration.startswith('perm'):
+			duration = "perm"
+		else:
+			self.rcon.say_message('Invalid ban duration', self.player)
+			return
+
+		if len(_temp) < 3:
+			self.rcon.say_message('You have to specify a ban reason', self.player)
+			return
+		else:
+			_temp.pop(0)
+			_temp.pop(0)
+			reason = ' '.join(_temp)
+
+		# Get player (if online)
+		player = self.get_player(target)
+		if not player:
+			self.rcon.say_message('Could not find player {}'.format(target), self.player)
+			return
+
+		if isinstance(duration, int):
+			ban = self.rcon.sendcommand(["banList.add", "guid", player['ea_guid'], 'seconds', duration, reason])
+		else:
+			ban = self.rcon.sendcommand(["banList.add", "guid", player['ea_guid'], duration, reason])
+
+		if ban[0] == "OK":
+			self.rcon.say_message('Player {} has been banned. Reason: {}'.format(target, reason), 'all')
+			self.rcon.sendcommand(["banList.save"])
+
 		return
+
+	def command_move(self):
+		if not self.message_clean:
+			self.rcon.say_message('You have to specify a player to move', self.player)
+			return
+
+		target = self.message_clean
+
+		# Get player (if online)
+		player = self.get_player(target)
+		if not player:
+			self.rcon.say_message('Could not find player {}'.format(target), self.player)
+			return
+
+		team = int(player['team'])
+
+		# Move player - Only work with modes that have 2 teams right now
+		if team == 1:
+			move_to = 2
+		elif team == 2:
+			move_to = 1
+		else:
+			self.rcon.say_message('Could not move player. Sorry.', self.player)
+			return
+
+		# We don't get a response code back from "admin.movePlayer" =/
+		move = self.rcon.sendcommand(["admin.movePlayer", target, move_to, 0, True])
+		self.rcon.sendcommand(["admin.yell", "You have been moved to the other team", "8", "player", target])
+		self.rcon.say_message('You have been moved to the other team', target)
+
+		return
+
+
+	# Other functions
+
+	def get_player(self, player):
+		playerlist = self.get_playerlist(details=True)
+
+		if player in playerlist:
+			return playerlist[player]
+		else:
+			return False
+
+
+	def get_playerlist(self, details=False):
+		playerlist = self.rcon.listplayer()
+
+		# Remove 14 first columns - we don't need them
+		del playerlist[0:13]
+
+		# Split list for each player
+		playerlist=[playerlist[x:x+10] for x in xrange(0, len(playerlist), 10)]
+		players = {}
+		test = {}
+
+		for player in playerlist:
+			if details == False:
+				players.append(player[0])
+			else:
+				playerinfo = {
+					'name': player[0],
+					'ea_guid': player[1],
+					'team': player[2],
+					'squad': player[3],
+					'kills': player[4],
+					'deaths': player[5],
+					'score': player[6],
+					'rank': player[7],
+					'ping': player[8],
+					'type': player[9],
+				}
+
+				#players.insert(len(players), playerinfo)
+				players[player[0]] = playerinfo
+
+		return players
+
 
 
 #########################################################
