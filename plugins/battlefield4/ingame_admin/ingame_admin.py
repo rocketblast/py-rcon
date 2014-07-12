@@ -1,5 +1,6 @@
 import os
 from plugins.battlefield4.bf4base import PluginBase
+import csv
 
 class ingame_admin(PluginBase):
 	adminlist = {}
@@ -10,6 +11,20 @@ class ingame_admin(PluginBase):
 		self.rcon = rcon
 		self.log = log
 		self.readAdmins()
+
+		p = self.rcon.listplayer()
+		p.pop(0)
+		p.pop(0)
+		reader = csv.reader(p)
+		rows = [row for row in reader if row]
+		headings = rows[0]
+
+		player_info = {}
+		for row in rows[1:]:
+			for col_header, data_column in zip(headings, row):
+				player_info.setdefault(col_header, []).append(data_column)
+		
+		print player_info["ping"]
 
 	def readAdmins(self):
 		#text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')

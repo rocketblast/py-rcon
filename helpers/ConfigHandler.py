@@ -24,16 +24,25 @@ class ConfigHandler:
     @staticmethod
     def getAllSections(file, log=None):
         Config = ConfigParser.ConfigParser()
+        ConfigHandler.ifFile(file, log)
+        
         try:
             Config.read(file)
-            sections = Config.sections()
-            return sections
+
+            if Config:
+                sections = Config.sections()
+                return sections
+            else:
+                log.debug("No sections was found in config file")
+                return None
         except Exception as ex:
             log.error("Unable to read sections, error: {}".format(ex))
 
     @staticmethod
     def getSection(file, section, log=None):
         Config = ConfigParser.ConfigParser()
+        ConfigHandler.ifFile(file, log)
+
         try:
             Config.read(file)
 
@@ -47,8 +56,8 @@ class ConfigHandler:
                         #if dict_sections[option] == -1:
                             # Do some debbuging stuff here later on
                     except Exception as e:
-                        print("There's a freakin exception in your confighandler!")
-                        print("Here's the error: %s" % e)
+                        log.error("Unable to get config section")
+                        log.error("Error: {}".format(e))
                         dict_sections[option] = None	#nulls the object, just in case
 
                 return dict_sections
@@ -61,14 +70,41 @@ class ConfigHandler:
     @staticmethod
     def getConfig(file, log=None):
         Config = ConfigParser.ConfigParser()
-        Config.read(file)	#might need a try'n catch here...
+        ConfigHandler.ifFile(file, log)
 
-        dict_config = {}
         try:
-            dict_config = Config._sections
+            Config.read(file)
         except Exception as e:
-            print("There is a scary exception reading your entire configfile!")
-            print("Here's the error: %s" % e)
-            dict_config = None	#nulls the object, just in case
+            log.error("Unable to read config file")
+            log.error("Error: {}".format(e))
+            Config = None	#nulls the object, just in case
 
-        return dict_config
+        # Check if config file does exist
+        if Config:
+            log.debug("Loaded config: {}".format(file))
+
+            return Config
+        else:
+            log.debug("Didn't find: {}".format(file))
+
+            return None
+
+    @staticmethod
+    def ifFile(filepath, log):
+        log.debug("Tries to check if file exists: {}".format(filepath))
+        if os.path.exists(filepath):
+            log.debug("Config exists at location: {}".format(filepath))
+        else:
+            log.debug("Config does not exists, tries to create it")
+            try:
+                f = file(filepath, "w")
+                f.write("[py-rcon]\n")
+                f.write("plugins:\n")
+                f.write("serverfile:\n")
+                f.write("serverfolder:\n")
+                f.close()
+
+                log.info("Config did not exists, so created it at location: {}".format(filepath))
+            except Exception as e:
+                log.error("Unable to auto create a configfile at path: {}".format(filepath))
+                log.error("With error: {}".format(e))
