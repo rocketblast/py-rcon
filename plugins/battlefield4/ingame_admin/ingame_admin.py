@@ -101,10 +101,12 @@ class ingame_admin(PluginBase):
 		self.message = data[2]	# Grab the message
 		self.target = data[3]	# Grab to whom the message is for
 
+		self.log.info('({}) {} - {}'.format(self.target, self.player, self.message))
+
 		if self.player == 'Server':
 			pass	#Do nothing?
 		else:
-			if self.message[0] == '!':
+			if self.message[0] == self.prefix: # Checks if given prefix is the same as config file
 				# Tries to grab the command and clears out message from prefix and command
 				self.command = self.message.split(' ')[0].lower().strip(self.prefix)
 				self.message = self.message[(self.prefix + self.command).__len__() + 1:]
@@ -120,6 +122,8 @@ class ingame_admin(PluginBase):
 						self.rcon.say_message("Insufficient permissions, you're not an admin", self.player)
 			#else:
 				# Do something about bad language here?
+
+		return
 
 	def on_squadchange(self, data):
 		return
