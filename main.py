@@ -78,6 +78,7 @@ def main(args):
     # Single server file, with possible multiple server configs
     ###########################################
     if settings != None:
+        logg.debug("Tries to load settings from a single file")
         # if serverfile is passed as an argument, then override anything in the configfile
         serverfile = None
         if args.serverfile != None:
@@ -109,7 +110,7 @@ def main(args):
                         else:
                             logg.info('Game name: {} is not supported'.format(s["name"]))
                     else:
-                        logg.info("Unable to find any sections in config file")
+                        logg.debug("Unable to find any sections in config file")
             else:
                 logg.debug("There is no settings in your config file")
         else:
@@ -121,23 +122,28 @@ def main(args):
     # Multiple server files, with only one server config per file
     ###########################################
     if settings != None:
-        try:
-            cfgFiles = ConfigHandler.findAllConfigs(args.serverfolder)
+        logg.debug("Tries to load settings from file/s")
+        if args.serverfolder: #if setting isset
+            try:
+                cfgFiles = ConfigHandler.findAllConfigs(args.serverfolder)
+                
+                if cfgFiles:    #might need to count number of results
+                    for cfg in cfgFiles:    # Foreach file, load config
+                        s = ConfigHandler.getSection(cfg, "server")
 
-            if cfgFiles:    #might need to count number of results
-                for cfg in cfgFiles:    # Foreach file, load config
-                    s = ConfigHandler.getSection(cfg, "server")
-
-                    if s["game"] == "battlefield4":
-                        t = BF4Handler('battlefield4', s["name"], s["ip"], s["port"], s["password"], plugins=s["plugins"].split(' '))
-                        threads.append(t)
-                        logg.info('[{}:{}] <{}> - Added server to list'.format(s["ip"], s["port"], s["name"]))
-                    elif s["game"] == "battlefield3":
-                        print "Found Battlefield 3 game"
-                    else:
-                        logg.warn("Game name: {} is not supported".format(s["name"]))
-        except Exception as ex:
-            logg.error("Unable to load serverfiles in folder: {}".format(args.serverfolder))
+                        if s["game"] == "battlefield4":
+                            t = BF4Handler('battlefield4', s["name"], s["ip"], s["port"], s["password"], plugins=s["plugins"].split(' '))
+                            threads.append(t)
+                            logg.info('[{}:{}] <{}> - Added server to list'.format(s["ip"], s["port"], s["name"]))
+                        elif s["game"] == "battlefield3":
+                            print "Found Battlefield 3 game"
+                        else:
+                            logg.warn("Game name: {} is not supported".format(s["name"]))
+            except Exception as ex:
+                logg.error("Unable to load serverfiles in folder: {}".format(args.serverfolder))
+                logg.error("Error: {}".format(ex))
+        else:
+            logg.debug("No serverfolder was specified")
     else:
         logg.debug("There is no serverfolder specified")
 

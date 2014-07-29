@@ -24,7 +24,7 @@ class ingame_admin(PluginBase):
 			for col_header, data_column in zip(headings, row):
 				player_info.setdefault(col_header, []).append(data_column)
 		
-		print player_info["ping"]
+		#print player_info["ping"]
 
 	def readAdmins(self):
 		#text_file = open(os.getcwd() + '\\plugins\\battlefield4\\ingame_admin\\admins.txt', 'r')
