@@ -4,12 +4,21 @@
 # Description: Base class for battlefield plugins
 
 import abc
+#from abc import ABCMeta, abstractmethod, abstractproperty
+import os
 
 class PluginBase(object):
     __metaclass__ = abc.ABCMeta
+    #_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     def __init__(self):
         pass
+
+    #@classmethod
+    #@abc.abstractmethod
+    #def get_pluginlocation(cls):
+        #"""Returns currenct location for the plugin"""
+        #return cls._location
 
     @abc.abstractmethod
     def on_connect(self, data):
