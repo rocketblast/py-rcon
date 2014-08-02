@@ -77,8 +77,23 @@ def main(args):
 
     # Single server file, with possible multiple server configs
     ###########################################
-    if settings != None:
+    if settings != None: # <--- Might not be needed for the new flow
         # if serverfile is passed as an argument, then override anything in the configfile
+        # 1. Check if serverfile has been set as an startup argument
+        # 2. Check configfile
+        #    - For section py-rcon if serverfile has been set in config
+        #    - For Section Server for server settings
+        # 3. Load server settings OR give message no serverconfig was found
+        # 4. Add server settings to the thread queue
+
+        #serverfile = None
+        #if args.serverfile != None:
+            # If serverfile was given as an startup argument
+            #serverfile = args.serverfile
+        #elif settings:
+            #sections = ConfigHandler.getAllSections(serverfile, logg)
+            #if sections:
+
         serverfile = None
         if args.serverfile != None:
             serverfile = args.serverfile
