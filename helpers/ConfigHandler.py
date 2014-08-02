@@ -17,8 +17,13 @@ class ConfigHandler:
         for root, dirs, files in os.walk(path):
             for file in files:
                 if file.endswith(".ini"):
-                    cfgs.append('{}{}'.format(path, file))
-
+                    try:
+                        cfgs.append('{}{}'.format(path, file))
+                        print "SUCCESS"
+                    except Exception as ex:
+                        log.error("Unable to add setting file: {}".format(file))
+                        log.error("Error: {}".format(ex))
+        #print "Type: {}".format(type(cfgs))
         return cfgs
 
     @staticmethod

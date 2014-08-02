@@ -21,6 +21,7 @@ class ingame_admin(PluginBase):
 
 		self.readConfig()
 
+		#print player_info["ping"]
 		#self.log.info("Location: {}".format(self.__location))
 
 	# Old method for reading admins
