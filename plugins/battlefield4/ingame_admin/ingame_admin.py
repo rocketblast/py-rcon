@@ -1,6 +1,5 @@
 import os
 from plugins.battlefield4.bf4base import PluginBase
-import csv
 
 class ingame_admin(PluginBase):
 	adminlist = {}
@@ -12,17 +11,11 @@ class ingame_admin(PluginBase):
 		self.log = log
 		self.readAdmins()
 
-		p = self.rcon.listplayer()
-		p.pop(0)
-		p.pop(0)
-		reader = csv.reader(p)
-		rows = [row for row in reader if row]
-		headings = rows[0]
+		self.admins = list()
+		self.prefix = "!"
 
-		player_info = {}
-		for row in rows[1:]:
-			for col_header, data_column in zip(headings, row):
-				player_info.setdefault(col_header, []).append(data_column)
+		self.public_commands = ["help", "status", "rules"]
+		self.admin_commands = ["kick", "yell", "warn", "kick", "ban", "move"]
 		
 		#print player_info["ping"]
 
@@ -48,21 +41,29 @@ class ingame_admin(PluginBase):
 	# Events
 	#############################
 	def on_connect(self, data):
+		print data
+
 		return
 
 	def on_authenticated(self, data):
+		print data
 		return
 
 	def on_join(self, data):
+		print data
 		return
 
 	def on_leave(self, data):
+		print data
 		return
 
 	def on_spawn(self, data):
+		print data
+
 		return
 
 	def on_kill(self, data):
+
 		return
 
 	def on_chat(self, data):
@@ -84,15 +85,19 @@ class ingame_admin(PluginBase):
 						self.rcon.kickplayer(player, reason)
 
 	def on_squadchange(self, data):
+		print data
 		return
 
 	def on_teamchange(self, data):
+		print data
 		return
 
 	def on_pb(self, data):
+		print data
 		return
 
 	def on_maxplayerchange(self, data):
+		print data
 		return
 
 	def on_levelload(self, data):
@@ -101,13 +106,17 @@ class ingame_admin(PluginBase):
 		self.readAdmins()
 
 	def on_roundover(self, data):
+		print data
 		return
 
 	def on_roundoverscore(self, data):
+		print data
 		return
 
 	def on_roundoverplayers(self, data):
+		print data
 		return
 
 	def on_unknown(self, data):
+		print data
 		return
