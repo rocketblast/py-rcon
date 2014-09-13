@@ -11,6 +11,11 @@ class ingame_admin(PluginBase):
 
 		self.adminlist = {}
 		#self.readAdmins()	# Reads admins from a textfile
+		self.admins = list()
+		self.prefix = "!"
+
+		self.public_commands = ["help", "status", "rules"]
+		self.admin_commands = ["kick", "yell", "warn", "kick", "ban", "move"]
 		
 		self.prefix = ""
 		self.welcome_message = ""
@@ -80,21 +85,29 @@ class ingame_admin(PluginBase):
 	#					Server Events   					 #
 	##########################################################
 	def on_connect(self, data):
+		print data
+
 		return
 
 	def on_authenticated(self, data):
+		print data
 		return
 
 	def on_join(self, data):
+		print data
 		return
 
 	def on_leave(self, data):
+		print data
 		return
 
 	def on_spawn(self, data):
+		print data
+
 		return
 
 	def on_kill(self, data):
+
 		return
 
 	def on_chat(self, data):
@@ -127,15 +140,19 @@ class ingame_admin(PluginBase):
 		return
 
 	def on_squadchange(self, data):
+		print data
 		return
 
 	def on_teamchange(self, data):
+		print data
 		return
 
 	def on_pb(self, data):
+		print data
 		return
 
 	def on_maxplayerchange(self, data):
+		print data
 		return
 
 	def on_levelload(self, data):
@@ -144,15 +161,19 @@ class ingame_admin(PluginBase):
 		self.readAdmins()
 
 	def on_roundover(self, data):
+		print data
 		return
 
 	def on_roundoverscore(self, data):
+		print data
 		return
 
 	def on_roundoverplayers(self, data):
+		print data
 		return
 
 	def on_unknown(self, data):
+		print data
 		return
 
 
