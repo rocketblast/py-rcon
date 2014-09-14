@@ -11,14 +11,17 @@ import os
 import logging
 import json
 import thread
+import threading
 import time
+from Queue import *
 
 from helpers import ConfigHandler
 from helpers import LoggHandler
 from games.battlefield import BF4Handler
 
 #from websocket.wsserver import WebSocketServer
-from websocket.wsserver import WebSocketHandler, ThreadedWebSocket, WebSocketServer
+#from websocket.wsserver import WebSocketHandler, ThreadedWebSocket, WebSocketServer
+from websocket.wsserver import CustomTcpServer, WebSocketHandler
 
 logg = None
 
@@ -154,8 +157,12 @@ def main(args):
 
     ###########################################
 
-    server = WebSocketServer()
+    #server = WebSocketServer()
     #server = WebSocketServer(("localhost", 9999), WebSocketHandler)
+    HOST = ''
+    PORT = 9999
+    commandQueue = Queue()
+    server = CustomTcpServer((HOST, PORT), WebSocketHandler, commandQueue)
     #threads.append(server)
     webthreads.append(server)
 
@@ -167,7 +174,14 @@ def main(args):
 
     for s in webthreads:
         s.daemon = True
-        s.start()
+        try:
+            s.start()
+        except KeyboardInterrupt:
+            os._exit()
+
+    #server_thread = threading.Thread(target=server.serve_forever)
+    #server_thread.daemon = True
+    #server_thread.start()
     #    print s
     ########################################################################
 
@@ -178,7 +192,7 @@ def main(args):
     	while True:
     		time.sleep(1)
     except KeyboardInterrupt:
-        server.server.server_close()
+        server.shutdown()
         logg.info("---------------------------")
     	sys.exit('Ctrl^C received - exiting!')
     ########################################################################
@@ -211,4 +225,8 @@ if __name__ == '__main__':
         ''')
 
     args = parser.parse_args()
-    main(args)
+    try:
+        main(args)
+    except:
+        raise
+    raw_input()
