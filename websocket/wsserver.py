@@ -1,10 +1,13 @@
 import struct
 import SocketServer
+import sys
+import os
+
 from base64 import b64encode
 from hashlib import sha1
 from mimetools import Message
 from StringIO import StringIO
-#from queue import Queue
+from Queue import *
 
 class WebSocketHandler(SocketServer.StreamRequestHandler):
 	magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
@@ -22,7 +25,6 @@ class WebSocketHandler(SocketServer.StreamRequestHandler):
 				self.read_next_message()
 
 	def read_next_message(self):
-		print self.rfile.read
 		if self.rfile:
 			length = ord(self.rfile.read(2)[1]) & 127
 			if length == 126:
@@ -78,26 +80,60 @@ class WebSocketHandler(SocketServer.StreamRequestHandler):
 	def on_message(self, message):
 		print message
 
-class ThreadedWebSocket(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-	allow_reuse_address = True
+class CustomTcpServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+	def __init__(self, server_address, RequestHandlerClass, commandQueue=Queue):
+		self.queue = commandQueue
+		self.server_address = server_address
+		self.RequestHandlerClass = RequestHandlerClass
+
+	def start(self):
+		self.allow_reuse_address = True
+		self.daemon_threads = True
+
+		try:
+			SocketServer.TCPServer.__init__(self, self.server_address, self.RequestHandlerClass)
+			print "Websocket server is about to start..."
+			print "Websocketserver is up and running..."
+			self.serve_forever()
+		except KeyboardInterrupt:
+			sys.exit("Closing down websocketserver")
+			#print "Shutting down websocketserver"
+			#os._exit()
+			#pass
+
+
+
+
+#class ThreadedWebSocket(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+	#allow_reuse_address = True
+	#pass
 	#def __init__(self, host, port):
 		#self.allow_reuse_address = True
 		#self.server = ThreadedWebSocket((host, port) TCPServer)
 
-	def run(self):
-		self.serve_forever()
+	#def run(self):
+		#self.serve_forever()
 
-	def terminate(self):
-		self.server_close()
+	#def terminate(self):
+		#self.server_close()
 
-class WebSocketServer():
+#class WebSocketServer():
+	#def __init__(self):
+		#self.server = ThreadedWebSocket(("localhost", 9999), WebSocketHandler)
+
+	#def start(self):
+		#self.server.serve_forever()
+
+	#def terminate(self):
+		#self.server.server_close()
+
 	#def __init__(host, port, TCPServer):
 		#self.server = ThreadedWebSocket(("localhost", 9999), WebSocketHandler)
 		#self.server = ThreadedWebSocket((host, port), TCPServer)
 
-	def start(self):
-		self.server = ThreadedWebSocket(("localhost", 9999), WebSocketHandler)
-		self.server.serve_forever()
+	#def start(self):
+		#self.server = ThreadedWebSocket(("localhost", 9999), WebSocketHandler, in_q)
+		#self.server.serve_forever()
 
 		#try:
 			#self.server.serve_forever()
