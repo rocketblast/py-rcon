@@ -10,10 +10,18 @@ import sys
 import os
 import logging
 import json
+import thread
+import threading
+import time
+from Queue import *
 
 from helpers import ConfigHandler
 from helpers import LoggHandler
 from games.battlefield import BF4Handler
+
+#from websocket.wsserver import WebSocketServer
+#from websocket.wsserver import WebSocketHandler, ThreadedWebSocket, WebSocketServer
+from websocket.wsserver import CustomTcpServer, WebSocketHandler
 
 logg = None
 
@@ -28,11 +36,11 @@ def main(args):
     # 2. Handle configuration (default or given arguments)
     # 3. Connect to all servers
 
-
     # Logs
     ########################################################################
     logdir = "" # Will be used as an argument to the handlers (so they know were to put logs)
     threads = []    #array were we store all threads
+    webthreads = []
 
     # Check if argument debug isset, if not go for default (INFO)
     ########################################################################
@@ -164,12 +172,34 @@ def main(args):
 
     ###########################################
 
+    #server = WebSocketServer()
+    #server = WebSocketServer(("localhost", 9999), WebSocketHandler)
+    HOST = ''
+    PORT = 9999
+    commandQueue = Queue()
+    server = CustomTcpServer((HOST, PORT), WebSocketHandler, commandQueue)
+    #threads.append(server)
+    webthreads.append(server)
+
     # Start each thread
     ########################################################################
     for t in threads:
     	t.daemon = True
     	t.start()
+
+    for s in webthreads:
+        s.daemon = True
+        try:
+            s.start()
+        except KeyboardInterrupt:
+            os._exit()
+
+    #server_thread = threading.Thread(target=server.serve_forever)
+    #server_thread.daemon = True
+    #server_thread.start()
+    #    print s
     ########################################################################
+
 
     # Run program, and wait for crash or user interupt (Ctrl + C)
     ########################################################################
@@ -177,6 +207,7 @@ def main(args):
     	while True:
     		time.sleep(1)
     except KeyboardInterrupt:
+        server.shutdown()
         logg.info("---------------------------")
     	sys.exit('Ctrl^C received - exiting!')
     ########################################################################
@@ -208,19 +239,9 @@ if __name__ == '__main__':
         Use debug flag to get more information printed out in both console and log files.
         ''')
 
-    #parser = argparse.ArgumentParser(description='''Py-rcon v0.9 by Rocketblast 2014, a mini-framework for handling connections 
-    #    to different types of gameservers.''') #come up with a better description...
-    #parser.add_argument('-c', '--config', metavar='file', type=argparse.FileType('r'), 
-    #    help='''configuration file for py-rcon, if non given then log, server or server directory must be specified. 
-    #    Example: main.py -l C:\logs -sf C:\configs''')
-    #parser.add_argument('-l', '--log', metavar='folder', help='Location were your log files will be stored')
-    #parser.add_argument('-sf', '--serverfile', metavar='file', type=argparse.FileType('r'),
-    #    help='Location of the single server configuration file (multiple server configs in one file')
-    #parser.add_argument('-sd', '--serverdirectory', metavar='folder', 
-    #    help='Path to a directory containing server configuration files')
-    #parser.add_argument('-d', '--debug', 
-    #    help='If set to true, console will print out more status messages. Can be used for debbuging your plugin')
-
     args = parser.parse_args()
-
-    main(args)
+    try:
+        main(args)
+    except:
+        raise
+    raw_input()
