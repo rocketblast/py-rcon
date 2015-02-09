@@ -1,7 +1,7 @@
 import ConfigParser
 import datetime
 import os
-from plugins.battlefield4.bf4base import PluginBase
+from pyrcon.plugins.battlefield4.bf4base import PluginBase
 
 class ingame_admin(PluginBase):
 	def __init__(self, rcon, log):
@@ -47,7 +47,7 @@ class ingame_admin(PluginBase):
 
 	def readConfig(self):
 		config = ConfigParser.ConfigParser()
-		config_plugin = os.path.join('plugins', 'battlefield4', 'ingame_admin', 'plugin_config.ini')
+		config_plugin = os.path.join('pyrcon', 'plugins', 'battlefield4', 'ingame_admin', 'plugin_config.ini')
 		config.read(config_plugin)
 
 		#	Wanted prefix for commands (recommended: !)

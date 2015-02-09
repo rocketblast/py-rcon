@@ -1,2 +1,0 @@
-from ConfigHandler import ConfigHandler
-from EventHandler import LoggHandler

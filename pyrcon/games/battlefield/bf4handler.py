@@ -9,8 +9,8 @@ import socket
 import sys
 import threading
 
-from helpers import LoggHandler
-from games import BaseHandler
+from pyrcon.helpers.EventHandler import LoggHandler
+from pyrcon.games import BaseHandler
 from frostbite import Frostbite
 from transportlayer import BFRCON
 
@@ -86,7 +86,7 @@ class BF4Handler(BaseHandler):
     def load_plugins(self):
         for plugin in self.serverPlugins:
             try:
-                mod = __import__('plugins.{}.{}.{}'.format(self.serverType, plugin, plugin), fromlist=[str(plugin)])
+                mod = __import__('pyrcon.plugins.{}.{}.{}'.format(self.serverType, plugin, plugin), fromlist=[str(plugin)])
                 nclass = getattr(mod, str(plugin))
                 self.serverLoadedPlugins.append(nclass(self.rcon, self.log))   #Keep track on this, might need to change it
             except Exception as ex:

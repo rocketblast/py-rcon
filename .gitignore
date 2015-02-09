@@ -56,3 +56,5 @@ docs/_build/
 
 # main.py
 config.ini
+
+.DS_Store

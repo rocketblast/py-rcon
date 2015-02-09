@@ -2,7 +2,7 @@ import ConfigParser
 import datetime
 import os
 
-from plugins.battlefield4.bf4base import PluginBase
+from pyrcon.plugins.battlefield4.bf4base import PluginBase
 
 # A basic admin plugin for py-rcon
 
