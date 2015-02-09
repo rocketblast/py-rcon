@@ -1,6 +1,7 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# File: main.py
+# File: pyrcond
 # Description: Main file for starting up py-rcon
 
 import argparse
@@ -15,13 +16,13 @@ import threading
 import time
 from Queue import *
 
-from helpers import ConfigHandler
-from helpers import LoggHandler
-from games.battlefield import BF4Handler
+from pyrcon.helpers.ConfigHandler import ConfigHandler
+from pyrcon.helpers.EventHandler import LoggHandler
+from pyrcon.games.battlefield import BF4Handler
 
 #from websocket.wsserver import WebSocketServer
 #from websocket.wsserver import WebSocketHandler, ThreadedWebSocket, WebSocketServer
-from websocket.wsserver import CustomTcpServer, WebSocketHandler
+from pyrcon.websocket.wsserver import CustomTcpServer, WebSocketHandler
 
 logg = None
 
@@ -64,11 +65,9 @@ def main(args):
     if args.config == 'config.ini':
         logg.debug('No arguments given, goes for default settings')
         settings = ConfigHandler.getConfig('{}/{}'.format(os.getcwd(), args.config), logg)
-    elif configfile != 'config.ini':  #configfile is given, tries to load it
+    else:
         logg.debug('Configfile found, tries to load it')
         settings = ConfigHandler.getConfig('{}'.format(args.config), logg)
-    else:
-        logg.warn('Unable to figure out what to do, report this problem with error 22')
     ########################################################################
 
 

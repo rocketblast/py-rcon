@@ -6,7 +6,7 @@
 import socket
 import sys
 
-from games import SocketHandler
+from pyrcon.games import SocketHandler
 from frostbite import Frostbite
 
 class BFRCON(SocketHandler):

@@ -8,7 +8,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-bin/
 build/
 develop-eggs/
 dist/
@@ -56,3 +55,5 @@ docs/_build/
 
 # main.py
 config.ini
+
+.DS_Store

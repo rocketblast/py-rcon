@@ -8,7 +8,7 @@ import socket
 import threading
 import importlib
 
-from helpers import LoggHandler
+from pyrcon.helpers.EventHandler import LoggHandler
 from sockethandler import SocketHandler
 
 class BaseHandler(threading.Thread):
@@ -29,7 +29,7 @@ class BaseHandler(threading.Thread):
     def load_plugins(self):
         for plugin in self.serverPlugins:
             try:
-                mod = __import__('plugins.{}.{}'.format(self.serverType, plugin), fromlist=[str(plugin)])
+                mod = __import__('pyrcon.plugins.{}.{}'.format(self.serverType, plugin), fromlist=[str(plugin)])
                 nclass = getattr(mod, str(plugin))
                 self.serverLoadedPlugins.append(nclass())   #Keep track on this, might need to change it
             except Exception as ex:

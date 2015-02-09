@@ -74,7 +74,7 @@
 	  Will try to shutdown current server.
 '''
 
-from plugins.battlefield4.bf4base import BF4PluginBase
+from pyrcon.plugins.battlefield4.bf4base import BF4PluginBase
 
 class sample_plugin(PluginBase):
 	# Default constructor for all plugins, don't mess with
